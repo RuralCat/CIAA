@@ -1,4 +1,8 @@
 # ignore .mat
-.mat
+*.mat
 # ignore .txt but Readme.txt
 !Readme.txt
+# ignore some pyc file
+*.pyc
+# ignore matlab temp file
+*.asv
