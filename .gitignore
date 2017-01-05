@@ -1,0 +1,4 @@
+# ignore .mat
+.mat
+# ignore .txt but Readme.txt
+!Readme.txt
