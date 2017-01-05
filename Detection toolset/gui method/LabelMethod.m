@@ -196,11 +196,10 @@ classdef LabelMethod
             % define color
             if isequal(label,0)
                 color = [1,0,0]; % red
-            else if isequal(label,1)
+            elseif isequal(label,1)
                     color = [0,1,0]; % green
-                else
+            elseif isequal(label,2)
                     color = [1,1,0]; % yellow
-                end
             end
             value1 = handles.showRectCheckbox.Value;
             value2 = handles.showOutlineCheckbox.Value;

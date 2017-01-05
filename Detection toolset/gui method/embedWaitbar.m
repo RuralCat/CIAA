@@ -9,7 +9,7 @@ if ischar(whichbar) || iscellstr(whichbar)
         bar = waitbar(x,'','visible','off');
         h = get(bar,'children');
         set(h,'parent',varargin{1});
-        set(h,'Units','character','Position',varargin{2});
+        set(h,'Units','normalized','Position',varargin{2});
         set(h,'XColor',[0.09,0.09,1]);
         set(h,'YColor',[0.09,0.09,1]);
         set(h,'Color',[0.09,0.09,1]);

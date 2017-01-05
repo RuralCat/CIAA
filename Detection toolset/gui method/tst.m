@@ -501,25 +501,29 @@ function tstFigure_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % 
 try
-    if ~TrainingSet.tsIsSaved(handles)
-        questAnswer = questdlg(['Do you want to save modified ',handles.ts.name,'?'],...
-            'Quit Training Set Tool','Yes', 'No', 'Cancel','Cancel');
-       switch questAnswer
-           case 'Yes'
-                [~, successSaved] = TrainingSet.saveTrainingSet(handles);
-                if successSaved
-                    delete(hObject);
-                else
-                    return;
-                end
-           case 'No'
-               delete(hObject);
-           case 'Cancel'
-               return;
-       end
-    else
-        % Hint: delete(hObject) closes the figure
+    if ~isfield(handles,'ts')
         delete(hObject);
+    else
+        if ~TrainingSet.tsIsSaved(handles)
+            questAnswer = questdlg(['Do you want to save modified ',handles.ts.name,'?'],...
+                'Quit Training Set Tool','Yes', 'No', 'Cancel','Cancel');
+           switch questAnswer
+               case 'Yes'
+                    [~, successSaved] = TrainingSet.saveTrainingSet(handles);
+                    if successSaved
+                        delete(hObject);
+                    else
+                        return;
+                    end
+               case 'No'
+                   delete(hObject);
+               case 'Cancel'
+                   return;
+           end
+        else
+            % Hint: delete(hObject) closes the figure
+            delete(hObject);
+        end
     end
 catch ME
     msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
@@ -1009,3 +1013,51 @@ function directionSlider_CreateFcn(hObject, eventdata, handles)
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
+
+% --- Excutes on button press
+function cnnPredictBtn_Callback(hObject, eventdata, handles)
+% hObject handle to cnnPredictBtn
+% eventdata
+% handles structure with handles and user data
+%
+try 
+    % get all candidate cilia data
+    h = waitbar(0, 'Cilia CNN Prediction...','WindowStyle','modal');
+    handles.ciliaIdx = handles.candidateCiliaIdx;
+    CiliaMethod.deleteShowHandle(handles);
+    handles = LabelMethod.computeAndShowCilia(handles);
+    % augment data and run python script
+    dataAugmentation(handles.data, handles.label, 'cnn');
+    waitbar(0.1);
+    system('python cnn\\cnnPredict.py');
+    % load saved label's file
+    count = 0;
+    while(1)
+        pause(1);
+        count = count + 1;
+        waitbar(0.1 + min(count, 10) * 0.07);
+        if exist('cnn\\label.npy','file')
+            waitbar(0.8);
+            label = py.numpy.load('cnn\\label.npy');
+            label = int8(py.array.array('d', label));
+            delete('cnn\\label.npy');
+            break;
+        end
+    end
+    % get cilia idx
+    waitbar(0.9);
+    handles.ciliaIdx = find(label == 1);
+    % delete old show handle
+    CiliaMethod.deleteShowHandle(handles);
+    % compute and show
+    handles = LabelMethod.computeAndShowCilia(handles);
+    waitbar(1);
+    close(h);
+    clc;
+catch ME
+    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
+        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
