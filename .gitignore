@@ -2,6 +2,7 @@
 *.mat
 Detection\ toolset/cnn/*.mat
 # ignore .txt but Readme.txt
+*.txt
 !Readme.txt
 # ignore some pyc file
 *.pyc
