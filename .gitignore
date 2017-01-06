@@ -1,8 +1,10 @@
 # ignore .mat
 *.mat
+Detection\ toolset/cnn/*.mat
 # ignore .txt but Readme.txt
 !Readme.txt
 # ignore some pyc file
 *.pyc
+Detection\ toolset/cnn/__pycache__/*
 # ignore matlab temp file
 *.asv
