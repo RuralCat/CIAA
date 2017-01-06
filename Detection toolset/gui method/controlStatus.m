@@ -57,6 +57,11 @@ classdef controlStatus
             else
                 handles.addCiliaBtn.Enable = 'off';
             end
+            if length(btnEnable) > 7
+                handles.cnnPredictBtn.Enable = btnEnable{8};
+            else
+                handles.cnnPredictBtn.Enable = 'off';
+            end
         end
         
         function setCiliaBtn(handles,btnEnable)

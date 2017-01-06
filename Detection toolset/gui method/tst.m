@@ -357,9 +357,9 @@ try
         handles = LabelMethod.detectCilia(handles);
         % change btn status
         if handles.totalImage > 1
-            controlStatus.setBtn(handles,{'off','on','on','off','on','on','on'});
+            controlStatus.setBtn(handles,{'off','on','on','off','on','on','on','on'});
         else
-            controlStatus.setBtn(handles,{'off','on','off','off','on','on','on'});
+            controlStatus.setBtn(handles,{'off','on','off','off','on','on','on','on'});
         end
         controlStatus.setTxt(handles);
         % set image path text
@@ -426,7 +426,7 @@ try
     else
         hasNextImage = 'on';
     end
-    controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on'});
+    controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on','on'});
     controlStatus.setTxt(handles);
 catch ME
     msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
@@ -741,7 +741,7 @@ try
             handles = LabelMethod.showCiliaImage(handles);
         end
         % set btn status
-        controlStatus.setBtn(handles,{'off','on',hasNext,'off','on',hasNext,'on'});
+        controlStatus.setBtn(handles,{'off','on',hasNext,'off','on',hasNext,'on','on'});
     else
     end
 catch ME

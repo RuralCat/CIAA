@@ -263,6 +263,9 @@ try
        handles = reshapeImage(handles,keyPress);
    elseif strcmp(keyPress,'d')
        handles = deleteImage(handles);
+   elseif strcmp(keyPress,'x') && handles.imageCursor ~= 0
+       handles.label(handles.imageCursor) = 3;
+       showTsImage(handles);
    end 
 catch ME
     msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
@@ -316,12 +319,16 @@ else
     handles.changeLabelBtn.Enable = 'on';
     handles.labelText.Visible = 'on';
     % show label
-    if handles.label(handles.imageCursor) == 1
+    label = handles.label(handles.imageCursor);
+    if label == 1
         handles.labelText.String = 'TRUE';
         handles.labelText.ForegroundColor = [0,1,0];
-    else
+    elseif label == 0
         handles.labelText.String = 'FALSE';
         handles.labelText.ForegroundColor = [1,0,0];
+    elseif label == 3
+        handles.labelText.String = 'UNCERTAIN';
+        handles.labelTest.ForegroundColor = [0,0,1];
     end
     % show image
     img = handles.imageStack{handles.imageCursor};
@@ -367,6 +374,7 @@ showTsImage(handles);
 handles.ts.data(:,handles.imageCursor,:) = reshape(img,[handles.imageSize^2,1,3]);
 
 function handles = deleteImage(handles)
+% delete roi image from training set
 k = handles.imageCursor;
 handles.imageNum = handles.imageNum - 1;
 handles.imageStack(k) = [];
