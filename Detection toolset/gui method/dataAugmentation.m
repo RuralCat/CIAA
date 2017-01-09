@@ -15,19 +15,11 @@ if nargin < 3
 end
 
 if ischar(ts)
-    % load raw training set
-    tsfile = load(ts);
-    % data should be a training set
-    if ~isfield(tsfile,'tsCheckCode')
-        error('It is not a training set file.');
-    else
-        rawData = tsfile.ts.data;
-        rawLabel = tsfile.ts.label;
-    end
+    [ciliaData, rawLabel] = TrainingSet.generateTsFromPosition(ts);
 else
-    rawData = ts;
+    ciliaData = ts;
     if tsLabel == -1
-        rawLabel = zeros(1,size(rawData,2));
+        rawLabel = zeros(1,size(ciliaData,2));
     else
         rawLabel = tsLabel;
     end
@@ -38,13 +30,18 @@ outputSize = 45;
 agmMultiple = 24;
 
 % reshape date
-imSize = sqrt(size(rawData,1));
-tsNum = size(rawData,2);
-imDepth = size(rawData,3);
+imSize = size(ciliaData{1},1);
+tsNum = size(ciliaData,2);
+imDepth = size(ciliaData{1},3);
+rawData = zeros(imSize,imSize,tsNum);
 if imDepth == 1
-    rawData = reshape(rawData,[imSize,imSize,tsNum]);
+    for k = 1 : tsNum
+        rawData(:,:,k) = ciliaData{k};
+    end
 elseif imDepth == 3
-    rawData = reshape(rawData(:,:,2),[imSize,imSize,tsNum]);
+    for k = 1 : tsNum
+        rawData(:,:,k) = ciliaData{k}(:,:,2);
+    end
 end
 % (raw + 5 rotate) * (2 noise + 1 filter) * (2 gamma transform) = 36
 rawData = imresize(rawData,[outputSize, outputSize]);

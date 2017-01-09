@@ -92,19 +92,22 @@ function loadtsBtn_Callback(hObject, eventdata, handles)
 %
 try
     if strcmp(handles.loadtsBtn.String,'Load Training Set')
-        [handles,successOpened] = TrainingSet.openTrainingSet(handles,true);
+        [filename, pathname] = uigetfile('*mat', 'Open Training Set');
+        if isequal(filename,0) || isequal(pathname,0)
+            return;
+        else
+            fullpath = fullfile(pathname,filename);
+            successOpened = true;
+        end
         if successOpened
             % store image
-            handles.label = handles.ts.label;
-            imageData = handles.ts.data;
-            imageSize = ceil(sqrt(size(imageData,1)));
-            handles.imageNum = size(imageData,2);
-            handles.imageSize = imageSize;
-            handles.imageStack = cell(handles.imageNum,1);
-            for k = 1 : handles.imageNum
-                handles.imageStack{k} = reshape(imageData(:,k,:),...
-                    imageSize,imageSize,3);
-            end
+            
+            [handles.cilia, handles.label, handles.ts] = ...
+                TrainingSet.generateTsFromPosition(fullpath);
+            handles.image = handles.ts.data;
+            handles.bbox = handles.ts.tsPosition;
+            handles.imageNum = handles.ts.tsNum;
+            handles.imgId = handles.ts.parentImage;
             % show image
             if isfield(handles,'checkpoint') && handles.checkpoint ~= -1
                 answer = questdlg('start over or resume?','','start over','resume',...
@@ -112,7 +115,7 @@ try
                 if strcmp(answer,'start over')
                     handles.imageCursor = 0;
                 else
-                    handles.imageCursor = handles.checkpoint;
+                    handles.imageCursor = min(handles.checkpoint, handles.imageNum);
                 end
             end
             handles.imageCursor = handles.imageCursor + 1;
@@ -319,7 +322,8 @@ else
     handles.changeLabelBtn.Enable = 'on';
     handles.labelText.Visible = 'on';
     % show label
-    label = handles.label(handles.imageCursor);
+    k = handles.imageCursor;
+    label = handles.label(k);
     if label == 1
         handles.labelText.String = 'TRUE';
         handles.labelText.ForegroundColor = [0,1,0];
@@ -331,14 +335,19 @@ else
         handles.labelTest.ForegroundColor = [0,0,1];
     end
     % show image
-    img = handles.imageStack{handles.imageCursor};
+    img = handles.cilia{k};
     if true
         if size(img, 3) == 3
             grayImg = rgb2gray(img);
         end
     end
     imshow(grayImg, [],'Parent',handles.imageAxes);
-    imshow(img, [], 'Parent', handles.colorImageAxes);
+    imshow(handles.image{handles.imgId(k)}, ...
+        [], 'Parent', handles.colorImageAxes);
+    handles.ciliaHandle = rectangle('parent', handles.colorImageAxes,...
+        'Position',[handles.bbox(k,2), handles.bbox(k,1),...
+        handles.bbox(k,6), handles.bbox(k,5)],...
+        'LineWidth', 0.01, 'EdgeColor', 'g');
     if handles.imageCursor == 1
         handles.previousImageBtn.Enable = 'off';
     elseif handles.imageCursor == handles.imageNum
@@ -377,9 +386,9 @@ function handles = deleteImage(handles)
 % delete roi image from training set
 k = handles.imageCursor;
 handles.imageNum = handles.imageNum - 1;
-handles.imageStack(k) = [];
-handles.ts.data(:,k,:) = [];
 handles.label(k) = [];
+handles.ts.tsPosition(k,:) = [];
+handles.ts.parentImage(k) = [];
 showTsImage(handles);
 handles = updateSlider(handles);
 

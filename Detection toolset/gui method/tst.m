@@ -90,8 +90,8 @@ try
     controlStatus.setOperationMenu(handles,true);
     controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 
@@ -213,8 +213,8 @@ try
     controlStatus.setBtn(handles,{'on','off','off','off'});
     handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -235,8 +235,8 @@ try
         controlStatus.setTxt(handles);
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -254,8 +254,8 @@ try
         handles = HandlesMethod.setFigureName(handles,handles.ts.name);
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -277,8 +277,8 @@ try
         handles.ts.name = oldName;
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -301,8 +301,8 @@ function mergetsMenu_Callback(hObject, eventdata, handles)
 try
     uiwait(mergets(handles.ts, handles.tstFigure.Position)); 
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -332,8 +332,8 @@ function trainingSetView_Callback(hObject, eventdata, handles)
 try
     uiwait(traingSetView); 
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -391,8 +391,8 @@ try
         set(handles.startLabelBtn,'string','Start Label');
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -429,8 +429,8 @@ try
     controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on','on'});
     controlStatus.setTxt(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -464,8 +464,8 @@ try
     controlStatus.setBtn(handles,{'off','on','on','off','on','on'});
     controlStatus.setTxt(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -487,8 +487,8 @@ try
         controlStatus.setBtn(handles,{'on','on','off','off'});
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -526,8 +526,8 @@ try
         end
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 
@@ -563,8 +563,8 @@ try
             handles = LabelMethod.showCiliaImage(handles);
     end
 catch ME
-	msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+	msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -587,8 +587,8 @@ try
     handles.label(:) = handles.labelMode;
     LabelMethod.showAllCilia(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -605,8 +605,8 @@ try
     handles.label(:) = 2;
     handles = nextImageBtn_Callback(hObject, eventdata, handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -622,8 +622,8 @@ function viewHelp_Callback(hObject, eventdata, handles)
 try
     open('CIAA Help.html');
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -655,8 +655,8 @@ try
     end
     LabelMethod.showAllCilia(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -677,8 +677,8 @@ try
     end
     LabelMethod.showAllCilia(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -699,8 +699,8 @@ try
     end
     LabelMethod.showAllCilia(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -745,8 +745,8 @@ try
     else
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -762,8 +762,8 @@ try
     handles.ciliaShowIdx = handles.ciliaShowIdx - 1;
     handles = LabelMethod.showCiliaImage(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -779,8 +779,8 @@ try
     handles.ciliaShowIdx = handles.ciliaShowIdx + 1;
     handles = LabelMethod.showCiliaImage(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -803,8 +803,8 @@ try
         handles.okBtn.Enable = 'off';
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -845,8 +845,8 @@ try
     handles.correctBtn.String = 'Correct';
     handles.okBtn.Enable = 'off';
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -879,8 +879,8 @@ try
         handles = LabelMethod.changeSlider(handles);
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -913,8 +913,8 @@ try
     handles.snrThreshold = value;
     handles = LabelMethod.changeSlider(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -959,8 +959,8 @@ try
         handles = LabelMethod.changeSlider(handles);
     end
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -995,8 +995,8 @@ try
     % detect cilia
     handles = LabelMethod.changeSlider(handles);
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure
@@ -1055,8 +1055,8 @@ try
     close(h);
     clc;
 catch ME
-    msg = [ME.message,'Error file:',ME.stack(1).file,'Error function:',...
-        ME.stack(1).name,'Error line:',num2str(ME.stack(1).line)];
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
 % Update handles structure

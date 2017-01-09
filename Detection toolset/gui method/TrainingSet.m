@@ -11,7 +11,6 @@ classdef TrainingSet
         data;
         label;
         parentImage;
-        mldata_descr_ordering;
         ciliaSet;
     end
     
@@ -21,15 +20,13 @@ classdef TrainingSet
             ts.savePath = 'nonePath';
             ts.trainingSetSize = handles.tsSize;
             ts.roiSize = handles.roiSize;
-            ts.data = handles.data;
+            ts.data = handles.image;
             ts.label = handles.label;
             ts.tsRegion = handles.roiRegion;
-            ts.tsPosition = handles.roiPosition;
+            ts.tsPosition = handles.roiPosition(handles.ciliaIdx,:);
             ts.tsNum = length(ts.label);
             ts.savedNum = 0;
             ts.parentImage = handles.parentImage;
-            ts.mldata_descr_ordering{1} = 'label';
-            ts.mldata_descr_ordering{2} = 'data';
             ts.ciliaSet = cell(ts.tsNum,4);
             for k = 1 : ts.tsNum
                 ts.ciliaSet{k,1} = k;
@@ -42,6 +39,7 @@ classdef TrainingSet
         function ts = MergeTrainingSet(ts,tsTmp)
             ts.data = cat(2,ts.data,tsTmp.data);
             ts.label = cat(2,ts.label,tsTmp.label);
+            ts.tsPosition = cat(1,ts.tsPosition,tsTmp.tsPosition);
             ts.tsNum = ts.tsNum + tsTmp.tsNum;
             if isprop(ts, 'parentImage') && isprop(tsTmp, 'parentImage')
                 ts.parentImage = cat(2,ts.parentImage, tsTmp.parentImage);
@@ -98,11 +96,11 @@ classdef TrainingSet
                     isprop(handles.ts,'ciliaSet') && ...
                     length(handles.ts.ciliaSet) == length(handles.ts.label)
                 fullpath = [fullpath(1:end-3),'txt'];
-                TrainingSet.saveXlsx(handles,fullpath);
+                TrainingSet.saveTrueCiliaInformation(handles,fullpath);
             end
         end
         
-        function saveXlsx(handles,savePath)
+        function saveTrueCiliaInformation(handles,savePath)
             % delete false positive and invalid 
             ciliaSet = handles.ts.ciliaSet(handles.ts.label == 1,:);
             % write to file
@@ -152,6 +150,28 @@ classdef TrainingSet
             handles.ts = ts.ts;
             successOpened = true;
             
+        end
+        
+        function [ciliaData, ciliaLabel, ts] = generateTsFromPosition(...
+                tsFilePath, roiSize)
+           % parse parameters
+           if nargin < 2
+               roiSize = 45;
+           end
+           % generate training set from roi position 
+           f = load(tsFilePath);
+           ts = f.ts;
+           rawImage = f.ts.data;
+           imgId = f.ts.parentImage; 
+           bbox = f.ts.tsPosition;
+           ciliaNum = f.ts.tsNum;
+           ciliaLabel = f.ts.label;
+           ciliaData = cell(1,ciliaNum);
+           for k = 1 : ciliaNum
+               ciliaRegion = CiliaMethod.getCiliaTrainingRegion(...
+                   rawImage{imgId(k)},bbox(k,:),roiSize);
+               ciliaData{k} = ciliaRegion;
+           end
         end
     end
 end

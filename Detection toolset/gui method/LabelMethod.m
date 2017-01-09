@@ -163,14 +163,15 @@ classdef LabelMethod
             % get cilia region
             roiSize = handles.ts.roiSize;
             handles.roiRegion = zeros(handles.imageW,handles.imageH,'uint16');
-            data = zeros(roiSize*roiSize,ciliaNum,3,'uint8');
+            data = cell(1,ciliaNum);
+%             data = zeros(roiSize,roiSize,3,ciliaNum,'uint8');
             label = ones(1,ciliaNum) * handles.labelMode;
             % create a binary cilia region
             handles.bwCiliaRegion = bwlabel(handles.imageBw);
             for k = 1 : ciliaNum
                 % get cilia region
                 [handles,ciliaRegion] = CiliaMethod.getCiliaRegion(handles, bbox, k);
-                data(:,k,:) = ciliaRegion;
+                data{k} = ciliaRegion;
                 % compute cilia length
                 handles = CiliaMethod.computeCiliaLength(handles,bbox,k);
                 % create show handle
@@ -178,12 +179,10 @@ classdef LabelMethod
             end
             % update handles
             handles.roiNum = ciliaNum;
+%             handles.data = data;
             handles.data = data;
             handles.label = label;
-            handles.parentImage = {};
-            for k = 1 : handles.roiNum
-                handles.parentImage{k} = handles.imageStack{handles.imageCursor};
-            end
+            handles.parentImage = ones(1,handles.roiNum) * handles.imageCursor;
             % show cilia in axes
             LabelMethod.showAllCilia(handles);
             handles.ciliaShowIdx = 1;

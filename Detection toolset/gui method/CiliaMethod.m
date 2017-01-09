@@ -69,26 +69,52 @@ classdef CiliaMethod
         end
         
         function [handles, ciliaRegion] = getCiliaRegion(handles, bbox, k)
-            if size(handles.image,3) == 3
-                imageR = handles.image(:,:,1);
-                imageG = handles.image(:,:,2);
-                imageB = handles.image(:,:,3);
-            else
-                imageR = handles.image;
-                imageG = handles.image;
-                imageB = handles.image;
-            end
             %
             bbox = bbox(handles.ciliaIdx(k),:);
             roiSize = handles.ts.roiSize;
             handles.roiRegion(bbox(1):bbox(3),bbox(2):bbox(4)) = k;
-            rim = imresize(imageR(bbox(1):bbox(3),bbox(2):bbox(4)),...
-                [roiSize,roiSize]);
-            gim = imresize(imageG(bbox(1):bbox(3),bbox(2):bbox(4)),...
-                [roiSize,roiSize]);
-            bim = imresize(imageB(bbox(1):bbox(3),bbox(2):bbox(4)),...
-                [roiSize,roiSize]);
-            ciliaRegion = [rim(:), gim(:), bim(:)];
+            ciliaRegion = CiliaMethod.getCiliaTrainingRegion(handles.image,...
+                bbox, roiSize);
+        end
+        
+        function localIm = getCiliaTrainingRegion(image, bbox, tsSize)
+            % get image size
+            [imageH, imageW, imageD] = size(image);
+            % we need 3 channel image
+            if imageD == 1
+                image = repmat(image,[1,1,3]);
+            end
+            % define padding length
+            padl = ceil(0.4*bbox(5:6));
+            xstart = max(bbox(1) - padl(1),1);
+            xend = min(bbox(3) + padl(1),imageH);
+            xl = xend - xstart;
+            ystart = max(bbox(2) - padl(2),1);
+            yend = min(bbox(4) + padl(2),imageW);
+            yl = yend - ystart;
+            % make a squre shape
+            sl = max(xl, yl);
+            diffl = abs(xl - sl);
+            xstart = max(xstart - floor(diffl/2), 1);
+            xend = min(xend + diffl - floor(diffl/2), imageH);
+            diffl = abs(yl - sl);
+            ystart = max(ystart - floor(diffl/2), 1);
+            yend = min(yend + diffl - floor(diffl/2), imageW);
+            % check if it is a squre
+            xl = xend - xstart;
+            yl = yend - ystart;
+            if xl ~= yl
+                sl = min(xl, yl);
+                diffl = abs(xl - sl);
+                xstart = xstart + floor(diffl/2);
+                xend = xend - (diffl - floor(diffl/2));
+                diffl = abs(yl - sl);
+                ystart = ystart + floor(diffl/2);
+                yend = yend - (diffl - floor(diffl/2));
+            end
+            % get local image and resize it to tsSize
+            localIm = image(xstart:xend,ystart:yend,:);
+            localIm = imresize(localIm, [tsSize, tsSize]); 
         end
         
         function handleDownFcn(hObject,eventdata)

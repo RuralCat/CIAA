@@ -7,10 +7,12 @@ classdef HandlesMethod
             handles.tsSize = 10000;
             handles.roiSize = 100;
             handles.data = [];
+            handles.image = {};
             handles.label = [];
             handles.parentImage = [];
             handles.roiRegion = [];
             handles.roiPosition = [];
+            handles.ciliaIdx = [];
             handles.labelMode = 0;
             handles.isExistTs = false;
             handles.snrThreshold = handles.snrSlider.Value;
