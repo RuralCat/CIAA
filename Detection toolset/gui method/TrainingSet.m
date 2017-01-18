@@ -81,8 +81,10 @@ classdef TrainingSet
             % delete invalid training set
             xPosi = find(ts.label == 2);
             ts.label(xPosi) = [];
-            ts.data(:,xPosi,:) = [];
+%             ts.data(:,xPosi,:) = [];
             ts.parentImage(xPosi) = [];
+            ts.tsPosition(xPosi,[]) = [];
+            ts.tsNum = length(ts.label);
             if isfield(handles,'checkpoint')
                 checkpoint = handles.checkpoint;
             else

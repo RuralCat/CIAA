@@ -6,6 +6,9 @@ from keras.layers.core import Activation
 from keras.layers.core import Flatten
 from keras.layers.core import Dense
 from keras.layers.normalization import BatchNormalization
+from keras.regularizers import l2, activity_l2
+
+w_reg = 0.1
 
 class LeNet:
     @staticmethod
@@ -14,21 +17,23 @@ class LeNet:
         model = Sequential()
 
 	# first set of CONV => RELU => POOL
-        model.add(Convolution2D(128, 7, 7, border_mode="same",
-			input_shape=(height, width, depth)))
-        # model.add(BatchNormalization(axis=1))
+        model.add(Convolution2D(20, 5, 5, border_mode="same",
+                  W_regularizer=l2(w_reg),
+                  input_shape=(height, width, depth)))
+        model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 	# second set of CONV => RELU => POOL
-        model.add(Convolution2D(256, 3, 3, border_mode="same"))
-        # model.add(BatchNormalization(axis=1))
+        model.add(Convolution2D(50, 5, 5, border_mode="same",
+                                W_regularizer=l2(w_reg)))
+        model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 	# set of FC => RELU layers
         model.add(Flatten())
-        model.add(Dense(1024))
+        model.add(Dense(500,W_regularizer=l2(w_reg)))
         model.add(Activation("relu"))
 
 	# softmax classifier

@@ -725,13 +725,14 @@ try
         % find cilia
         idx = handles.bwCiliaRegion(round(pointY),round(pointX));
         if idx~=0 && isempty(find(handles.ciliaIdx == idx, 1))
+            % update handles
             handles.roiNum = handles.roiNum + 1;
             handles.ciliaIdx = cat(2,handles.ciliaIdx,idx);
-            % update handles
             k = handles.roiNum;
             handles.label = cat(2,handles.label,handles.labelMode);
+            handles.parentImage = cat(2, handles.parentImage, handles.imageCursor);
             [handles,data] = CiliaMethod.getCiliaRegion(handles,handles.roiPosition,k);
-            data = reshape(data,[size(data,1),1,3]);
+%             data = reshape(data,[size(data,1),1,3]);
             handles.data = cat(2,handles.data,data);
             handles = CiliaMethod.computeCiliaLength(handles,handles.roiPosition,k);
             handles = CiliaMethod.createShowHandle(handles, handles.roiPosition, k);
@@ -1023,11 +1024,20 @@ function cnnPredictBtn_Callback(hObject, eventdata, handles)
 try 
     % get all candidate cilia data
     h = waitbar(0, 'Cilia CNN Prediction...','WindowStyle','modal');
-    handles.ciliaIdx = handles.candidateCiliaIdx;
+    ciliaNum = length(handles.candidateCiliaIdx);
+    bbox = handles.roiPosition(handles.candidateCiliaIdx,:);
+    smallCiliaData = cell(1, 2*ciliaNum);
+    bigCiliaData = cell(1, 2*ciliaNum);
+    for k = 1 : ciliaNum
+        [smallCiliaData{k}, smallCiliaData{k+ciliaNum}] = ...
+            CiliaMethod.getCiliaTrainingRegion(handles.image, bbox(k,:), 45, 0.4);
+        [bigCiliaData{k}, bigCiliaData{k+ciliaNum}] = ...
+            CiliaMethod.getCiliaTrainingRegion(handles.image, bbox(k,:), 79, 1.0);
+    end
     CiliaMethod.deleteShowHandle(handles);
-    handles = LabelMethod.computeAndShowCilia(handles);
     % augment data and run python script
-    dataAugmentation(handles.data, handles.label, 'cnn');
+    dataAugmentation(smallCiliaData, -1, 'cnn\\', 'test');
+    dataAugmentation(bigCiliaData, -1, 'cnn\\', 'image');
     waitbar(0.1);
     system('python cnn\\cnnPredict.py');
     % load saved label's file
@@ -1046,7 +1056,7 @@ try
     end
     % get cilia idx
     waitbar(0.9);
-    handles.ciliaIdx = find(label == 1);
+    handles.ciliaIdx = handles.candidateCiliaIdx(label == 1);
     % delete old show handle
     CiliaMethod.deleteShowHandle(handles);
     % compute and show

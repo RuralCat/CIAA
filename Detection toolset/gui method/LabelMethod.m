@@ -89,11 +89,12 @@ classdef LabelMethod
             fileStruct = dir(imageDir);
             for i = 1 : length(fileStruct)
                 if fileStruct(i).isdir
-                    if ~strcmp(fileStruct(i).name,'.') &&  ~strcmp(fileStruct(i).name,'..')
+                    if ~strcmp(fileStruct(i).name(1),'.')
                         [imageStack,imageNum] = LabelMethod.getImage(...
                             fullfile(imageDir,fileStruct(i).name),imageStack,imageNum);
                     end
-                else if strcmp(fileStruct(i).name(end-2:end),'tif')
+                else if strcmp(fileStruct(i).name(end-2:end),'tif') && ...
+                            ~strcmp(fileStruct(i).name(1), '.')
                         imageNum = imageNum + 1;
                         imageStack{imageNum} = fullfile(imageDir,fileStruct(i).name);
                     end

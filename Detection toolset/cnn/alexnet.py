@@ -18,50 +18,52 @@ class AlexNet:
         model = Sequential()
 
         #conv1
-        model.add(Convolution2D(48, 11, 11, subsample=(1,1), W_regularizer=l2(w_reg), input_shape=(height, width, depth)))
+        model.add(Convolution2D(96, 11, 11, subsample=(1,1),
+                                W_regularizer=l2(w_reg),
+                                input_shape=(height, width, depth)))
         if BatchNorm:
-            model.add(BatchNormalization(axis=1))
+            model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
 
         # conv2
         model.add(ZeroPadding2D((2,2), dim_ordering='tf'))
-        model.add(Convolution2D(64, 5, 5, W_regularizer=l2(w_reg)))
+        model.add(Convolution2D(256, 5, 5, W_regularizer=l2(w_reg)))
         if BatchNorm:
-            model.add(BatchNormalization(axis=1))
+            model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(3,3), strides=(2,2)))
 
         # conv3
         model.add(ZeroPadding2D((1,1), dim_ordering='tf'))
-        model.add(Convolution2D(96, 3, 3, W_regularizer=l2(w_reg)))
+        model.add(Convolution2D(384, 3, 3, W_regularizer=l2(w_reg)))
         if BatchNorm:
-            model.add(BatchNormalization(axis=1))
+            model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         
         # conv4
         model.add(ZeroPadding2D((1,1), dim_ordering='tf'))
-        model.add(Convolution2D(96, 3, 3, W_regularizer=l2(w_reg)))
+        model.add(Convolution2D(384, 3, 3, W_regularizer=l2(w_reg)))
         if BatchNorm:
-            model.add(BatchNormalization(axis=1))
+            model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
 
         # conv5
         model.add(ZeroPadding2D((1,1), dim_ordering='tf'))
-        model.add(Convolution2D(64, 3, 3, W_regularizer=l2(w_reg)))
+        model.add(Convolution2D(256, 3, 3, W_regularizer=l2(w_reg)))
         if BatchNorm:
-            model.add(BatchNormalization(axis=1))
+            model.add(BatchNormalization(axis=3))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(3,3), strides=(1,1)))
 
         # fc1
         model.add(Flatten())
-        model.add(Dense(384))
+        model.add(Dense(2048))
         model.add(Activation("relu"))
         model.add(Dropout(0.5))
 
         # fc2
-        model.add(Dense(384))
+        model.add(Dense(2048))
         model.add(Activation("relu"))
         model.add(Dropout(0.5))
 

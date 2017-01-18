@@ -77,7 +77,15 @@ classdef CiliaMethod
                 bbox, roiSize);
         end
         
-        function localIm = getCiliaTrainingRegion(image, bbox, tsSize)
+        function [localIm, shiftIm] = getCiliaTrainingRegion(image, bbox, tsSize, ...
+                padpar, shiftPixel)
+            % parse parameters
+            if nargin < 4
+                padpar = 0.4;
+            end
+            if nargin < 5
+                shiftPixel = 10;
+            end
             % get image size
             [imageH, imageW, imageD] = size(image);
             % we need 3 channel image
@@ -85,7 +93,7 @@ classdef CiliaMethod
                 image = repmat(image,[1,1,3]);
             end
             % define padding length
-            padl = ceil(0.4*bbox(5:6));
+            padl = ceil(padpar*bbox(5:6));
             xstart = max(bbox(1) - padl(1),1);
             xend = min(bbox(3) + padl(1),imageH);
             xl = xend - xstart;
@@ -115,6 +123,9 @@ classdef CiliaMethod
             % get local image and resize it to tsSize
             localIm = image(xstart:xend,ystart:yend,:);
             localIm = imresize(localIm, [tsSize, tsSize]); 
+            shiftIm = image(max(xstart-shiftPixel,1) : min(xend - shiftPixel, imageH),...
+                max(ystart - shiftPixel,1) : min(yend - shiftPixel, imageW), :);
+            shiftIm = imresize(shiftIm, [tsSize, tsSize]);
         end
         
         function handleDownFcn(hObject,eventdata)

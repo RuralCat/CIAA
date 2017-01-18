@@ -1,19 +1,19 @@
 #import the necessary packages
-import CiliaLenet
+from CiliaNet import CiliaNet
 import numpy as np
 
 # set data path
-trainDataPath = "cnn\\trainData.mat"
-trainLabelPath = "cnn\\trainLabel.mat"
-weightsPath = "cnn\\alexnet_weights.hdf5"
-augmentationMultiple = 24
+meanPath = "cnn\\DualAlexNet"
+modelPath = "cnn\\DualAlexNetModel.hdf5"
+dataPath = "cnn\\testData.mat"
+imagePath = "cnn\\imageData.mat"
+augmentationMultiple = 16
 tpThreshold = 0.5
 
 # init model and predict
-model = CiliaLenet.CiliaLenet(trainDataPath, trainLabelPath,
-    model = 'alexnet')
-model.SetNetParams(weightsPath = weightsPath)
-(label, loss, accuracy) = model.Predict("cnn\\data.mat")
+label = CiliaNet.PredictFromFile(dataPath, imagePath, 
+                                 True, modelPath, 
+                                 True, meanPath)
 
 # reshape label and store
 rawDataSize = np.int32(label.shape[0] / augmentationMultiple)
