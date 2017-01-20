@@ -1,6 +1,6 @@
 %% It is a simple cilia's data augmentation tool
 %
-function dataAugmentation(ts, tsLabel, savePath, saveHead)
+function dataAugmentation(ts, tsLabel, savePath, saveHead, augmentation)
 % tspath - training set path generated from 'detection toolset'
 
 %% initialize parameters
@@ -10,6 +10,9 @@ end
 if nargin < 3
     savePath = pwd;
     saveHead = '';
+end
+if nargin < 5
+    augmentation = 8;
 end
 
 if ischar(ts)
@@ -42,10 +45,12 @@ end
 %% augmentation
 % augmentatoin by rotating and flipping
 data = rawData;
-data = cat(3, data, rot90(rawData));
-data = cat(3, data, rot90(rot90(rawData)));
-data = cat(3, data, rot90(rot90(rot90(rawData))));
-data = cat(3, data, fliplr(data));
+if isequal(augmentation, 8)
+    data = cat(3, data, rot90(rawData));
+    data = cat(3, data, rot90(rot90(rawData)));
+    data = cat(3, data, rot90(rot90(rot90(rawData))));
+    data = cat(3, data, fliplr(data));
+end
 % data = cat(3, data, flipud(rawData));
 % augmentation by adding noise and filtering
 if 0

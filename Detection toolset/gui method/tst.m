@@ -339,6 +339,22 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+% --------------------------------------------------------------------
+function cnnTrainingTool_Callback(hObject, eventdata, handles)
+% hObject    handle to trainingSetView (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%
+try
+    uiwait(cnnTrainingTool); 
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
 
 % --- Executes on button press in startLabelBtn.
 function startLabelBtn_Callback(hObject, eventdata, handles)

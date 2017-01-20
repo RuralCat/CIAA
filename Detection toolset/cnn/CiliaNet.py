@@ -10,6 +10,7 @@ import h5py
 from alexnet import AlexNet
 from DualAlexNet import DualAlexNet
 from lenet import LeNet
+from Inception import Inception
 
 
 class CiliaNet(object):
@@ -52,7 +53,8 @@ class CiliaNet(object):
             np.save(meanFile + '_dataMean.npy', self.dataMean)
             np.save(meanFile + '_imageMean.npy', self.imageMean)
 
-    def CreateModel(self, weights = None, learningRate = 0.0001):
+    def CreateModel(self, weights = None,
+                    learningRate = 1e-4, momentum = 0.95, decay = 1e-3):
         # create train model
         if self.modelMode is 'lenet':
             self.Model = LeNet.build(self.data.shape[1],
@@ -74,8 +76,14 @@ class CiliaNet(object):
                                         self.imagedata.shape[3],
                                         2,
                                         weights)
-        opt = SGD(lr=learningRate, momentum=0.95,
-                  decay = 0.003, nesterov=True)
+        elif self.modelMode is 'inception':
+            self.Model = Inception.build(self.data.shape[1],
+                                         self.data.shape[2],
+                                         self.data.shape[3],
+                                         2,
+                                         weights)
+        opt = SGD(lr=learningRate, momentum=momentum,
+                  decay = decay, nesterov=True)
         self.Model.compile(loss="binary_crossentropy",
                            optimizer=opt,
                            metrics=["binary_accuracy"])
@@ -157,15 +165,10 @@ class CiliaNet(object):
             testImage = self.ReadMatData(testImage) - self.imageMean
             self.testData = [self.testData, testImage]
         # read label if it is not a none object
-        if testLabel is not None:
-            (loss, accuracy) = self.Model.evaluate(self.testData,
-                                                   self.testLabel)
-        else:
-            loss = 0.0
-            accuracy = 0.0
         label = self.Model.predict(self.testData)
+        label = np.argmax(label, axis=1)
 
-        return label, loss, accuracy
+        return label
 
     @staticmethod
     def PredictFromFile(testData, testImage = None,

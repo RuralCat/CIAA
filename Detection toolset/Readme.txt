@@ -11,4 +11,5 @@ Update log:
 (1) modify training set's saved method
 (2) add a window in TrainingSetView tool to view cilia position in full image
 (3) add a 'Cnn Predict' button to view a beta cnn's prediction
-(4) reorganize code file 
+(4) reorganize code file
+(5) add 'cnn training tool' to train a better net from better training set 
