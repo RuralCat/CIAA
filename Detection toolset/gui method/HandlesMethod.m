@@ -15,8 +15,10 @@ classdef HandlesMethod
             handles.ciliaIdx = [];
             handles.labelMode = 0;
             handles.isExistTs = false;
-            handles.snrThreshold = handles.snrSlider.Value;
-            handles.directionThreshold = handles.directionSlider.Value;
+            if isfield(handles, 'snrSlider')
+                handles.snrThreshold = handles.snrSlider.Value;
+                handles.directionThreshold = handles.directionSlider.Value;
+            end
         end
         
         function handles = setFigureName(handles,name)

@@ -99,7 +99,9 @@ classdef cttMethod
         
         function strValue = ConvertStr(value)
             strValue = num2str(value * 100);
-            if value >= 0.1
+            if length(strValue) < 5
+                strValue = [strValue, '%'];
+            elseif value >= 0.1
                 strValue = [strValue(1:5),'%'];
             else
                 strValue = [strValue(1:4),'%'];

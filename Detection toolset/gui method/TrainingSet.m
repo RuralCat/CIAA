@@ -83,7 +83,7 @@ classdef TrainingSet
             ts.label(xPosi) = [];
 %             ts.data(:,xPosi,:) = [];
             ts.parentImage(xPosi) = [];
-            ts.tsPosition(xPosi,[]) = [];
+            ts.tsPosition(xPosi,:) = [];
             ts.tsNum = length(ts.label);
             if isfield(handles,'checkpoint')
                 checkpoint = handles.checkpoint;
