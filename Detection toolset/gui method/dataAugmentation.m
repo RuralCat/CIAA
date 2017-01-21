@@ -45,7 +45,7 @@ end
 %% augmentation
 % augmentatoin by rotating and flipping
 data = rawData;
-if isequal(augmentation, 8)
+if isequal(augmentation, 8) || isequal(augmentation, 16)
     data = cat(3, data, rot90(rawData));
     data = cat(3, data, rot90(rot90(rawData)));
     data = cat(3, data, rot90(rot90(rot90(rawData))));
