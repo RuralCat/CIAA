@@ -1076,6 +1076,7 @@ try
     % delete old show handle
     CiliaMethod.deleteShowHandle(handles);
     % compute and show
+    handles.labelMode = 1; % show all cilia true
     handles = LabelMethod.computeAndShowCilia(handles);
     waitbar(1);
     close(h);
