@@ -1,12 +1,33 @@
 classdef LabelMethod
     methods(Static)
-        function showImage(~,handles,image)
-            if ischar(image)
-                image = imread(image);
+        function handles = showImage(handles, image, showMode)
+            % parse inputs
+            if nargin < 3
+                showMode = 1;
             end
+            % if image is dir, read image
+            if ischar(image)
+                [image, imageMode] = ImageMethod.readCiliaImage(image);
+                handles.image = image;
+                handles.imageMode = imageMode;
+            end
+            % update control status
+            handles = HandlesMethod.updateImModePopmenu(handles, handles.imageMode);
+            % if imModePopmenu changed
+            if isequal(handles.imageMode, 'merged')
+               if showMode > 1
+                   image = image(:, :, showMode - 1);
+               end
+            end
+            % show image
             hImage = imshow(image,[],'Parent',handles.imageAxes);
-            set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
-                'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
+            % bind with event
+            if isequal(handles.imageMode, 'g') || ...
+                    (isequal(handles.imageMode, 'merged') && ...
+                    (showMode == 1 || shoeMode == 3))
+                set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
+                    'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
+            end
         end
         
         function handles = showCiliaImage(handles,idx)
@@ -106,15 +127,13 @@ classdef LabelMethod
             % read image
             embedWaitbar(0,handles.waitbar,'Read Image...'); %!!!!
             pause(0.1);
-            imagePath = handles.imageStack{handles.imageCursor};
-            handles.image = imread(imagePath);
             handles.imageW = size(handles.image,2);
             handles.imageH = size(handles.image,1);
             % get candidate cilia
             embedWaitbar(0.1,handles.waitbar,'Detect Cilia...'); %!!!
             pause(0.1);
             [imBw, ciliaBox, ciliaIdx, snrRatio, directionRatio] = ...
-                semiCiliaDetection(imagePath,...
+                semiCiliaDetection(handles.image, ...
                 handles.snrThreshold, handles.directionThreshold);
             handles.imageBw = imBw;
             handles.ciliaBox = ciliaBox;

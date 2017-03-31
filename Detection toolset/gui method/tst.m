@@ -55,10 +55,13 @@ function tst_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 try
+    % set default parameters
+    handles = HandlesMethod.initializeHandles(handles);
+    handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
     % show a black image
-    LabelMethod.showImage(hObject,handles,zeros(500));
+    handles = LabelMethod.showImage(handles,zeros(500));
     LabelMethod.showCiliaImage(handles,-1);
-    LabelMethod.showCiliaFeatrue(handles,-1);
+%     LabelMethod.showCiliaFeatrue(handles,-1);
     waitbarImage = ones(30,250);
     waitbarImage(1,:) = 0; waitbarImage(end,:) = 0;
     waitbarImage(:,1) = 0; waitbarImage(:,end) = 0;
@@ -73,9 +76,6 @@ try
         progressbarImage(:,1) = 0; progressbarImage(:,end) = 0;
     end
     imshow(progressbarImage,'Parent',handles.progressbarAxes);
-    % set default parameters
-    handles = HandlesMethod.initializeHandles(handles);
-    handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
     % create new training set
     handles = TrainingSet.newTrainingSet(handles);
     % create a waitbar
@@ -151,45 +151,11 @@ end
 
 delete(handles.tstFigure)
 
-
-% --- Executes on selection change in popupmenu1.
-function popupmenu1_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = get(hObject,'String') returns popupmenu1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu1
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-     set(hObject,'BackgroundColor','white');
-end
-
-set(hObject, 'String', {'plot(rand(5))', 'plot(sin(1:0.01:25))', 'bar(1:.5:10)', 'plot(membrane)', 'surf(peaks)'});
-
-
 % --------------------------------------------------------------------
 function fileMenu_Callback(hObject, eventdata, handles)
 % hObject    handle to fileMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function Untitled_1_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function newtsMenu_Callback(hObject, eventdata, handles)
@@ -208,7 +174,7 @@ try
     end
     handles = HandlesMethod.initializeHandles(handles);
     handles = TrainingSet.newTrainingSet(handles);
-    LabelMethod.showImage(hObject,handles,zeros(500));
+    handles = LabelMethod.showImage(handles,zeros(500));
     controlStatus.setTxt(handles);
     controlStatus.setBtn(handles,{'on','off','off','off'});
     handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
@@ -316,13 +282,6 @@ function helpMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --------------------------------------------------------------------
 function trainingSetView_Callback(hObject, eventdata, handles)
 % hObject    handle to trainingSetView (see GCBO)
@@ -355,7 +314,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-
 % --- Executes on button press in startLabelBtn.
 function startLabelBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to startLabelBtn (see GCBO)
@@ -367,7 +325,7 @@ try
         return;
     end
     startBtnStatus = get(handles.startLabelBtn,'string');
-    if strcmp(startBtnStatus,'Start Label')
+    if strcmp(startBtnStatus,'Start Analysis')
         % detect cilia
         handles.imageCursor = handles.imageCursor + 1;
         handles = LabelMethod.detectCilia(handles);
@@ -381,7 +339,7 @@ try
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{handles.imageCursor};
         % change button string
-        set(handles.startLabelBtn,'string','End Label');
+        set(handles.startLabelBtn,'string','End Analysis');
     else
         % save buffer
         if ~isequal(handles.imageCursor,1)
@@ -394,7 +352,7 @@ try
         handles.tsCursor = handles.tsCursor + handles.roiNum;
         % show first image in image stack
         handles.imageCursor = 0;
-        LabelMethod.showImage(hObject,handles,handles.imageStack{1});
+        handles = LabelMethod.showImage(handles,handles.imageStack{1});
         LabelMethod.showCiliaImage(handles,-1);
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
@@ -404,7 +362,7 @@ try
         controlStatus.setBtn(handles,{'on','on','off','off'});
         controlStatus.setTxt(handles);
         controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
-        set(handles.startLabelBtn,'string','Start Label');
+        set(handles.startLabelBtn,'string','Start Analysis');
     end
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -431,7 +389,7 @@ try
     handles.tsCursor = handles.tsCursor + handles.roiNum;
     % show next image
     handles.imageCursor = handles.imageCursor + 1;
-    LabelMethod.showImage(hObject,handles,handles.imageStack{handles.imageCursor});
+    handles = LabelMethod.showImage(handles,handles.imageStack{handles.imageCursor});
     % detect cilia
     handles = LabelMethod.detectCilia(handles);
     % set image path text
@@ -452,7 +410,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-
 % --- Executes on button press in previousImageBtn.
 function previousImageBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to previousImageBtn (see GCBO)
@@ -471,7 +428,7 @@ try
     handles.tsCursor = handles.tsCursor - handles.roiNum;
     % show next image
     handles.imageCursor = handles.imageCursor - 1;
-    LabelMethod.showImage(hObject,handles,handles.imageStack{handles.imageCursor});
+    handles = LabelMethod.showImage(handles,handles.imageStack{handles.imageCursor});
     % show cilia in axes
     for i = 1 : handles.roiNum
         handles = LabelMethod.showCilia(handles,i);
@@ -496,7 +453,7 @@ function importImageBtn_Callback(hObject, eventdata, handles)
 try
     handles = LabelMethod.importImage(handles);
     if handles.totalImage > 0
-        LabelMethod.showImage(hObject,handles,handles.imageStack{1});
+        handles = LabelMethod.showImage(handles,handles.imageStack{1});
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
         controlStatus.setTxt(handles);
@@ -509,6 +466,25 @@ catch ME
 end
 % Update handles structure
 guidata(hObject, handles);
+
+
+% --- Executes on selection change in imModePopmenu.
+function imModePopmenu_Callback(hObject, eventdata, handles)
+% hObject    handle to agmPopmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%
+try
+    handles = LabelMethod.showImage(handles, handles.image, hObject.Value);
+catch ME
+	msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+
+% Update handles structure
+guidata(hObject, handles);
+
 
 % --- Executes when user attempts to close tstFigure.
 function tstFigure_CloseRequestFcn(hObject, eventdata, handles)
@@ -827,7 +803,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-
 % --- Executes on button press in okBtn.
 function okBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to okBtn (see GCBO)
@@ -868,8 +843,6 @@ catch ME
 end
 % Update handles structure
 guidata(hObject, handles);
-
-
 
 function snrThresTxt_Callback(hObject, eventdata, handles)
 % hObject    handle to snrThresTxt (see GCBO)
@@ -915,7 +888,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on slider movement.
 function snrSlider_Callback(hObject, eventdata, handles)
 % hObject    handle to snrSlider (see GCBO)
@@ -937,7 +909,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-
 % --- Executes during object creation, after setting all properties.
 function snrSlider_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to snrSlider (see GCBO)
@@ -948,8 +919,6 @@ function snrSlider_CreateFcn(hObject, eventdata, handles)
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
-
-
 
 function directionThresTxt_Callback(hObject, eventdata, handles)
 % hObject    handle to directionThresTxt (see GCBO)
@@ -983,7 +952,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-
 % --- Executes during object creation, after setting all properties.
 function directionThresTxt_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to directionThresTxt (see GCBO)
@@ -995,7 +963,6 @@ function directionThresTxt_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 % --- Executes on slider movement.
 function directionSlider_Callback(hObject, eventdata, handles)
@@ -1018,7 +985,6 @@ catch ME
 end
 % Update handles structure
 guidata(hObject, handles);
-
 
 % --- Executes during object creation, after setting all properties.
 function directionSlider_CreateFcn(hObject, eventdata, handles)
