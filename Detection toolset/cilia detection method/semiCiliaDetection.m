@@ -1,5 +1,5 @@
 function [imBw, ciliaBox, ciliaIdx, snrRatio, directionRatio] = ...
-    semiCiliaDetection(imdir, snrThres,...
+    semiCiliaDetection(image, snrThres,...
     directionThres, minCiliaArea, minCiliaLength, ...
     maxCiliaLength, angleSlice)
 % this is a semi-automated cilia detection method
@@ -24,11 +24,13 @@ if nargin < 4
 end
 
 % read image 
-im = imread(imdir);
-if size(im,3) == 3
-    im = im2double(im(:,:,2));
+if ischar(image)
+    image = imread(image);
+end
+if size(image,3) == 3
+    im = im2double(image(:,:,2));
 else
-    im = im2double(im);
+    im = im2double(image);
 end
 
 % filter image
