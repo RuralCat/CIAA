@@ -1,6 +1,6 @@
 classdef CiliaMethod
     methods(Static)
-        function handles = computeCiliaLength(handles, bbox, k)
+        function handles = computeCiliaLength(handles, image, bbox, k)
             % get bounding box
             padlen = 5;
             rowStart = max(bbox(handles.ciliaIdx(k),1)-padlen,1); 
@@ -17,17 +17,32 @@ classdef CiliaMethod
             y = B{1}(:,2) + colStart - 1;
             handles.outLine{k} = [x,y];
             % find cilia skeleton and compute cilia length
-            ciliaSkeleton = bwmorph(localRegion,'thin',Inf);
-            ciliaSkeleton = bwboundaries(ciliaSkeleton,'noholes');
-            x = ciliaSkeleton{1}(:,1) + rowStart - 1;
-            y = ciliaSkeleton{1}(:,2) + colStart - 1;
-            handles.skeleton{k} = [x,y];
-            ciliaLength = 0;
-            for s = 1 : length(x)-1
-                ciliaLength = ciliaLength + sqrt(sum((ciliaSkeleton{1}(s,:)...
-                    - ciliaSkeleton{1}(s+1,:)).^2, 2));
+            localRegion = image(rowStart : rowEnd, colStart : colEnd);
+            [ske, skeLen] = measureCiliaLength(localRegion);
+            if ~isempty(ske)
+                ske(:,1) = ske(:,1) + rowStart;
+                ske(:,2) = ske(:,2) + colStart;
             end
-            handles.ciliaLength{k} = ciliaLength/2;
+            handles.skeleton{k} = ske;
+            handles.ciliaLength{k} = skeLen;
+        end
+        
+        function handles = computeOuterCiliaLength(handles, image, bbox, k)
+            % get bounding box
+            padlen = 5;
+            rowStart = max(bbox(handles.ciliaIdx(k),1)-padlen,1); 
+            colStart = max(bbox(handles.ciliaIdx(k),2)-padlen,1);
+            rowEnd = min(bbox(handles.ciliaIdx(k),3) + padlen,handles.imageW);
+            colEnd = min(bbox(handles.ciliaIdx(k),4) + padlen,handles.imageH);
+            % find cilia skeleton and compute cilia length
+            localRegion = image(rowStart : rowEnd, colStart : colEnd);
+            [ske, skeLen] = measureCiliaLength(localRegion);
+            if ~isempty(ske)
+                ske(:,1) = ske(:,1) + rowStart;
+                ske(:,2) = ske(:,2) + colStart;
+            end
+            handles.outerSkeleton{k} = ske;
+            handles.outerCiliaLength{k} = skeLen;
         end
         
         function deleteShowHandle(handles)

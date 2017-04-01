@@ -22,9 +22,10 @@ classdef LabelMethod
             % show image
             hImage = imshow(image,[],'Parent',handles.imageAxes);
             % bind with event
-            if isequal(handles.imageMode, 'g') || ...
+            if isequal(handles.imageMode, 'r') || ...
+                    isequal(handles.imageMode, 'g') || ...
                     (isequal(handles.imageMode, 'merged') && ...
-                    (showMode == 1 || shoeMode == 3))
+                    (showMode == 1 || showMode == 2 || showMode == 3))
                 set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
                     'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
             end
@@ -52,12 +53,24 @@ classdef LabelMethod
                 localIm = handles.image(xstart:xend,ystart:yend,:);
                 imshow(localIm,[],'Parent',handles.ciliaAxes);
                 % show skeleton
-                skeletonX = handles.skeleton{idx}(:,1) - xstart;
-                skeletonY = handles.skeleton{idx}(:,2) - ystart;
-                hold(handles.ciliaAxes,'on');
-                handles.skeletonHandle = plot(handles.ciliaAxes,...
-                    skeletonY,skeletonX,'r','LineWidth',0.01);
-                hold(handles.ciliaAxes,'off');
+                showFlag = 1;
+                if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
+                        'Cy3') && ~isempty(handles.outerSkeleton{idx})
+                    skeletonX = handles.outerSkeleton{idx}(:,1) - xstart;
+                    skeletonY = handles.outerSkeleton{idx}(:,2) - ystart;
+                elseif ~isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
+                        'Cy3') && ~isempty(handles.skeleton{idx})
+                    skeletonX = handles.skeleton{idx}(:,1) - xstart;
+                    skeletonY = handles.skeleton{idx}(:,2) - ystart;
+                else
+                    showFlag = 0;
+                end
+                if showFlag
+                    hold(handles.ciliaAxes,'on');
+                    handles.skeletonHandle = plot(handles.ciliaAxes,...
+                        skeletonY,skeletonX,'r','LineWidth',0.01);
+                    hold(handles.ciliaAxes,'off');
+                end
                 % set btn status
                 if idx == 1
                     if handles.roiNum == 1
@@ -160,6 +173,26 @@ classdef LabelMethod
             embedWaitbar(1,handles.waitbar,'Completed!'); %!!!
         end
         
+        function handles = detectOuterCilia(handles)
+            % get histIm
+            histIm = im2double(handles.image);
+            if size(handles.image,3) == 3
+                histIm = imagePreProcessing(histIm(:,:,1));
+            else
+                histIm = imagePreProcessing(histIm);
+            end
+            % get roi position
+            ciliaIdx = handles.ciliaIdx;
+            ciliaNum = length(ciliaIdx);
+            bbox = handles.roiPosition;
+            % compute outer length
+            for k = 1 : ciliaNum
+                handles = CiliaMethod.computeOuterCiliaLength(handles, ...
+                    histIm, bbox, k);
+            end
+            
+        end
+        
         function handles = filterCilia(handles)
             % filter cilia
             ciliaIdx = handles.candidateCiliaIdx;
@@ -188,12 +221,19 @@ classdef LabelMethod
             label = ones(1,ciliaNum) * handles.labelMode;
             % create a binary cilia region
             handles.bwCiliaRegion = bwlabel(handles.imageBw);
+            % get histim
+            histIm = im2double(handles.image);
+            if size(handles.image, 3) == 3
+                histIm = imagePreProcessing(histIm(:,:,2));
+            else
+                histIm = imagePreProcessing(histIm);
+            end
             for k = 1 : ciliaNum
                 % get cilia region
                 [handles,ciliaRegion] = CiliaMethod.getCiliaRegion(handles, bbox, k);
                 data{k} = ciliaRegion;
                 % compute cilia length
-                handles = CiliaMethod.computeCiliaLength(handles,bbox,k);
+                handles = CiliaMethod.computeCiliaLength(handles, histIm, bbox,k);
                 % create show handle
                 handles = CiliaMethod.createShowHandle(handles, bbox, k);
             end
@@ -253,7 +293,7 @@ classdef LabelMethod
         end
         
         function handles = changeSlider(handles)
-            if strcmp(handles.startLabelBtn.String,'Start Label')
+            if strcmp(handles.startLabelBtn.String,'Start Analysis')
                 return;
             end
             CiliaMethod.deleteShowHandle(handles);

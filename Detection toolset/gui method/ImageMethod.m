@@ -42,23 +42,36 @@ classdef ImageMethod
         end
         end
         
-        function processImage(handles)
+        function handles = processCurrentImage(handles)
             % the image may be merged, Cy3, FITC and DAPI, so we should
             % have different processing method
             
             % get imMode
             imMode = handles.imageMode;
+            handles.haveCilia = 1;
             switch imMode
                 case 'r'
-                    
+                    tempImage = handles.image;
+                    if size(handles.image, 3) == 3
+                        handles.image = tempImage(:,:,3);
+                    end
+                    handles = LabelMethod.detectCilia(handles);
+                    handles.image = tempImage;
                 case 'g'
-                    
+                    handles = LabelMethod.detectCilia(handles);
+                    handles.haveCilia = 0;
                 case 'b'
-                    
+                    handles = NucleiMethod.detectNuclei(handles);
                 case 'merged'
-                    
+                    % detect cilia on green channel
+                    handles = LabelMethod.detectCilia(handles);
+                    % detect nuclei on blue channel
+                    handles = NucleiMethod.detectNuclei(handles);
+                    % find the corresponding outer length of cilia
+                    handles = LabelMethod.detectOuterCilia(handles);
                 case 'undef'
-                    
+                    % do nothing
+                    handles.haveCilia = 0;
             end
 
         end

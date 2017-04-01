@@ -49,6 +49,11 @@ for k = 1 : length(ind)
     coarseSkeMap(pX(ind(k)), pY(ind(k))) = 0;
 end
 fineSkeMap = bwareafilt(coarseSkeMap, 1);
+if max(fineSkeMap(:)) == 0
+    ske = [];
+    skeLen = 0;
+    return;
+end
 
 % extend skeleton map
 [pX, pY] = find(fineSkeMap == 1);
@@ -75,6 +80,7 @@ ske = cat(1, ske(1:2:end,:), ske(end,:))';
 
 % smooth skeleton
 ske = spcrv([[ske(2,1) ske(2,:) ske(2,end)]; [ske(1,1) ske(1,:) ske(1,end)]], 5);
+ske = ske';
 ske = ske(:,2:-1:1);
 skeLen = ske(2:end,:) - ske(1:end-1,:);
 skeLen = sum(sqrt(skeLen(:,1).^2 + skeLen(:,2).^2));

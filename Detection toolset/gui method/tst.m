@@ -85,7 +85,7 @@ try
         handles.progressbarAxes.Position);
     % set control status
     controlStatus.setBtn(handles,{'on','off','off','off'});
-    set(handles.startLabelBtn,'string','Start Label');
+    set(handles.startLabelBtn,'string','Start Analysis');
     controlStatus.setTxt(handles);
     controlStatus.setOperationMenu(handles,true);
     controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
@@ -326,14 +326,21 @@ try
     end
     startBtnStatus = get(handles.startLabelBtn,'string');
     if strcmp(startBtnStatus,'Start Analysis')
-        % detect cilia
+        % move image's cursor
         handles.imageCursor = handles.imageCursor + 1;
-        handles = LabelMethod.detectCilia(handles);
+        handles = ImageMethod.processCurrentImage(handles);
         % change btn status
         if handles.totalImage > 1
-            controlStatus.setBtn(handles,{'off','on','on','off','on','on','on','on'});
+            nextImageBtnEnable = 'on';
         else
-            controlStatus.setBtn(handles,{'off','on','off','off','on','on','on','on'});
+            nextImageBtnEnable = 'off';
+        end
+        if handles.haveCilia
+            controlStatus.setBtn(handles,{'off','on',...
+                nextImageBtnEnable, 'off','on','on','on','on'});
+        else
+            controlStatus.setBtn(handles,{'off','on',...
+                nextImageBtnEnable, 'off'});
         end
         controlStatus.setTxt(handles);
         % set image path text
@@ -341,18 +348,15 @@ try
         % change button string
         set(handles.startLabelBtn,'string','End Analysis');
     else
-        % save buffer
-        if ~isequal(handles.imageCursor,1)
-            handles.ts = handles.ts.MergeTrainingSet(handles.tsBuffer);
-        end
         % save current ts
-        handles.tsBuffer = TrainingSet(handles);
-        handles.ts = handles.ts.MergeTrainingSet(handles.tsBuffer);
+        if handles.haveCilia
+            handles.ts = handles.ts.MergeTrainingSet(TrainingSet(handles));
+        end
         % move ts cursor
         handles.tsCursor = handles.tsCursor + handles.roiNum;
         % show first image in image stack
         handles.imageCursor = 0;
-        handles = LabelMethod.showImage(handles,handles.imageStack{1});
+        handles = LabelMethod.showImage(handles, handles.imageStack{1});
         LabelMethod.showCiliaImage(handles,-1);
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
@@ -369,7 +373,7 @@ catch ME
         ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
     msgShow(handles,msg,'error');
 end
-% Update handles structure
+% Update handles structur e
 guidata(hObject, handles);
 
 % --- Executes on button press in nextImageBtn.
@@ -380,18 +384,16 @@ function handles = nextImageBtn_Callback(hObject, eventdata, handles)
 %
 try
     % save ts buffer
-    if ~isequal(handles.imageCursor,1)
-        handles.ts = handles.ts.MergeTrainingSet(handles.tsBuffer);
+    if handles.haveCilia
+        handles.ts = handles.ts.MergeTrainingSet(TrainingSet(handles));
     end
-    % save current ts into ts buffer
-    handles.tsBuffer = TrainingSet(handles);
     % move ts cursor
     handles.tsCursor = handles.tsCursor + handles.roiNum;
     % show next image
     handles.imageCursor = handles.imageCursor + 1;
     handles = LabelMethod.showImage(handles,handles.imageStack{handles.imageCursor});
-    % detect cilia
-    handles = LabelMethod.detectCilia(handles);
+    % process image
+    handles = ImageMethod.processCurrentImage(handles);
     % set image path text
     handles.imagePathTxt.String = handles.imageStack{handles.imageCursor};
     % change btn status
@@ -400,7 +402,11 @@ try
     else
         hasNextImage = 'on';
     end
-    controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on','on'});
+    if handles.haveCilia
+        controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on','on'});
+    else
+        controlStatus.setBtn(handles,{'off','on',hasNextImage,'on'});
+    end
     controlStatus.setTxt(handles);
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -532,7 +538,7 @@ function imageAxes_ButtonDownFcn(hObject, eventdata, handles)
 %
 try
     if strcmp(get(handles.startLabelBtn,'Enable'),'off') || ...
-            strcmp(get(handles.startLabelBtn,'string'),'Start Label')
+            strcmp(get(handles.startLabelBtn,'string'),'Start Analysis')
         return;
     end
     curPoint = get(gca,'CurrentPoint');
@@ -642,7 +648,7 @@ function showRectCheckbox_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of showRectCheckbox
 %
 try
-    if strcmp(handles.startLabelBtn.String,'Start Label')
+    if strcmp(handles.startLabelBtn.String,'Start Analysis')
         return;
     end
     LabelMethod.showAllCilia(handles);
@@ -664,7 +670,7 @@ function showOutlineCheckbox_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of showOutlineCheckbox
 %
 try
-    if strcmp(handles.startLabelBtn.String,'Start Label')
+    if strcmp(handles.startLabelBtn.String,'Start Analysis')
         return;
     end
     LabelMethod.showAllCilia(handles);
@@ -686,7 +692,7 @@ function showLenCheckbox_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of showLenCheckbox
 %
 try
-    if strcmp(handles.startLabelBtn.String,'Start Label')
+    if strcmp(handles.startLabelBtn.String,'Start Analysis')
         return;
     end
     LabelMethod.showAllCilia(handles);
@@ -1054,3 +1060,46 @@ catch ME
 end
 % Update handles structure
 guidata(hObject, handles);
+
+% Min nuclei area text -- callback function
+function minNucleiAreaTxt_Callback(hObject, eventdata, handles)
+%
+try
+    handles = NucleiMethod.deleteNucleiHandle(handles);
+    handles = NucleiMethod.detectNuclei(handles);
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+% Nuclei's edge factor text -- callback function
+function edgeFactorTxt_Callback(hObject, eventdata, handles)
+%
+try
+    handles = NucleiMethod.deleteNucleiHandle(handles);
+    handles = NucleiMethod.detectNuclei(handles);
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+% if show nuclei's outline
+function showNucleiCheckbox_Callback(hObject, eventdata, handles)
+%
+try
+    handles = NucleiMethod.showNucleiBound(handles);
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+
