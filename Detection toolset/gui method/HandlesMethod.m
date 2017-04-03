@@ -18,6 +18,9 @@ classdef HandlesMethod
         end
         
         function handles = initializeImage(handles)
+            % delete show handle
+            CiliaMethod.deleteShowHandle(handles);
+            NucleiMethod.deleteNucleiHandle(handles);
             % initial paras
             handles.data = [];
             handles.image = {};
@@ -28,13 +31,14 @@ classdef HandlesMethod
             handles.ciliaIdx = [];
             handles.skeleton = [];
             handles.ciliaLength = [];
+            handles.manualCiliaLength = [];
             handles.outerSkeleton = [];
             handles.outerCiliaLength = [];
+            handles.manualOuterCiliaLength = [];
+            handles.autoAnalysisTime = [];
+            handles.manualAnalysisTime = [];
             handles.imageMode = 'undef';
             handles.nucleiNum = 0;
-            % delete show handle
-            CiliaMethod.deleteShowHandle(handles);
-            NucleiMethod.deleteNucleiHandle(handles);
         end
         
         function handles = setFigureName(handles,name)
@@ -45,6 +49,7 @@ classdef HandlesMethod
         function handles = updateImModePopmenu(handles, imMode)
            % set popmenu string
            handles.imModePopmenu.Enable = 'on';
+           handles.imModePopmenu.Value = 1;
            switch imMode
                case 'r'
                    handles.imModePopmenu.String = {'Cy3'};

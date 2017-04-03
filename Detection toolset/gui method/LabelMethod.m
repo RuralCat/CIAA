@@ -16,9 +16,9 @@ classdef LabelMethod
                 end
                 handles.image = image;
                 handles.imageMode = imageMode;
+                % update control status
+            handles = HandlesMethod.updateImModePopmenu(handles, imageMode);
             end
-            % update control status
-            handles = HandlesMethod.updateImModePopmenu(handles, handles.imageMode);
             % if imModePopmenu changed
             if isequal(handles.imageMode, 'merged')
                if showMode > 1
@@ -223,8 +223,10 @@ classdef LabelMethod
             bbox = handles.roiPosition;
             % compute outer length
             for k = 1 : ciliaNum
+                tic;
                 handles = CiliaMethod.computeOuterCiliaLength(handles, ...
                     histIm, bbox, k);
+                handles.autoAnalysisTime(k) = handles.autoAnalysisTime(k) + toc;
             end
             
         end
@@ -264,12 +266,16 @@ classdef LabelMethod
             else
                 histIm = imagePreProcessing(histIm);
             end
+            handles.autoAnalysisTime = zeros(1, ciliaNum);
+            handles.manualAnalysisTime = zeros(1, ciliaNum);
             for k = 1 : ciliaNum
                 % get cilia region
                 [handles,ciliaRegion] = CiliaMethod.getCiliaRegion(handles, bbox, k);
                 data{k} = ciliaRegion;
                 % compute cilia length
+                tic;
                 handles = CiliaMethod.computeCiliaLength(handles, histIm, bbox,k);
+                handles.autoAnalysisTime(k) = handles.autoAnalysisTime(k) + toc;
                 % create show handle
                 handles = CiliaMethod.createShowHandle(handles, bbox, k);
             end
@@ -341,6 +347,7 @@ classdef LabelMethod
             CiliaMethod.deleteShowHandle(handles);
             handles = LabelMethod.filterCilia(handles);
             handles = LabelMethod.computeAndShowCilia(handles);
+            handles = LabelMethod.detectOuterCilia(handles);
         end
         
     end

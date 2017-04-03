@@ -356,6 +356,7 @@ try
         handles.imageCursor = 0;
         handles = LabelMethod.showImage(handles, handles.imageStack{1});
         LabelMethod.showCiliaImage(handles,-1);
+        handles = HandlesMethod.initializeImage(handles);
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
         % save
@@ -787,7 +788,9 @@ function correctBtn_Callback(hObject, eventdata, handles)
 %
 try
     if strcmp(handles.correctBtn.String,'Correct')
+        tic;
         handles.freehand = imfreehand(handles.ciliaAxes,'Closed',false);
+        handles.ciliaSkeCorrectTime = toc;
         handles.correctBtn.String = 'Cancel';
         handles.okBtn.Enable = 'on';
     else
@@ -818,7 +821,6 @@ try
     for k = 1 : size(position,1)-1
         len = len + sqrt(sum((position(k,:)-position(k+1,:)).^2,2));
     end
-    handles.ciliaLength{idx} = len;
     handles.showLengthHandle{idx}.String = num2str(len);
     % show skeleton
 %     handles.skeletonHandle.Visible = 'off';
@@ -831,7 +833,16 @@ try
     box = handles.roiPosition(handles.ciliaIdx(idx),:);
     xStart = max(box(1) - ceil(0.3*box(5)),1);
     yStart = max(box(2) - ceil(0.3*box(6)),1);
-    handles.skeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
+    imType = handles.imModePopmenu.String{handles.imModePopmenu.Value};
+    if isequal(imType, 'merged') || isequal(imType, 'FITC')
+        handles.skeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
+        handles.manualCiliaLength{idx} = len;
+    elseif isequal(imType, 'Cy3')
+        handles.outerSkeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
+        handles.manualOuterCiliaLength{idx} = len;
+    end
+    handles.manualOuterCiliaLength(idx) = handles.manualOuterCiliaLength(idx) ...
+        + handles.ciliaSkeCorrectTime;
     % set btn status
     delete(handles.freehand);
     handles.correctBtn.String = 'Correct';
