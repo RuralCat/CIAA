@@ -26,7 +26,9 @@ bwIm = imdilate(bwIm, [se90, se0]);
 % erosion
 seD = strel('diamond', 1);
 bwIm = imerode(bwIm, seD);
-bwIm = bwareafilt(bwIm, 1);
+if max(bwIm(:)) > 0
+    bwIm = bwareafilt(bwIm, 1);
+end
 bwIm = imfill(bwIm, 'holes');
 
 % find coarse skeleton map
@@ -48,7 +50,11 @@ ind = find(adjPoint(:,1) == -1);
 for k = 1 : length(ind)
     coarseSkeMap(pX(ind(k)), pY(ind(k))) = 0;
 end
-fineSkeMap = bwareafilt(coarseSkeMap, 1);
+if max(coarseSkeMap(:)) > 0
+    fineSkeMap = bwareafilt(coarseSkeMap, 1);
+else
+    fineSkeMap = coarseSkeMap;
+end
 if max(fineSkeMap(:)) == 0
     ske = [];
     skeLen = 0;

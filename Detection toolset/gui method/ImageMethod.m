@@ -48,7 +48,6 @@ classdef ImageMethod
             
             % get imMode
             imMode = handles.imageMode;
-            handles.haveCilia = 1;
             switch imMode
                 case 'r'
                     tempImage = handles.image;
@@ -59,7 +58,6 @@ classdef ImageMethod
                     handles.image = tempImage;
                 case 'g'
                     handles = LabelMethod.detectCilia(handles);
-                    handles.haveCilia = 0;
                 case 'b'
                     handles = NucleiMethod.detectNuclei(handles);
                 case 'merged'
@@ -71,7 +69,7 @@ classdef ImageMethod
                     handles = LabelMethod.detectOuterCilia(handles);
                 case 'undef'
                     % do nothing
-                    handles.haveCilia = 0;
+                    handles.haveCilia = false;
             end
 
         end

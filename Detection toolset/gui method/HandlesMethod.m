@@ -6,6 +6,19 @@ classdef HandlesMethod
             handles.imageCursor = 0;
             handles.tsSize = 10000;
             handles.roiSize = 100;
+            handles.startLabelBtn.String = 'Start Analysis';
+            handles.labelMode = 0;
+            handles.isExistTs = false;
+            handles.haveCilia = false;
+            handles = HandlesMethod.initializeImage(handles);
+            if isfield(handles, 'snrSlider')
+                handles.snrThreshold = handles.snrSlider.Value;
+                handles.directionThreshold = handles.directionSlider.Value;
+            end
+        end
+        
+        function handles = initializeImage(handles)
+            % initial paras
             handles.data = [];
             handles.image = {};
             handles.label = [];
@@ -13,13 +26,15 @@ classdef HandlesMethod
             handles.roiRegion = [];
             handles.roiPosition = [];
             handles.ciliaIdx = [];
-            handles.labelMode = 0;
-            handles.isExistTs = false;
+            handles.skeleton = [];
+            handles.ciliaLength = [];
+            handles.outerSkeleton = [];
+            handles.outerCiliaLength = [];
             handles.imageMode = 'undef';
-            if isfield(handles, 'snrSlider')
-                handles.snrThreshold = handles.snrSlider.Value;
-                handles.directionThreshold = handles.directionSlider.Value;
-            end
+            handles.nucleiNum = 0;
+            % delete show handle
+            CiliaMethod.deleteShowHandle(handles);
+            NucleiMethod.deleteNucleiHandle(handles);
         end
         
         function handles = setFigureName(handles,name)

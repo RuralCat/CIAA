@@ -8,6 +8,12 @@ classdef LabelMethod
             % if image is dir, read image
             if ischar(image)
                 [image, imageMode] = ImageMethod.readCiliaImage(image);
+                if isequal(imageMode, 'r') || isequal(imageMode, 'g') ...
+                        || isequal(imageMode, 'merged')
+                    handles.haveCilia = true;
+                else
+                    handles.haveCilia = false;
+                end
                 handles.image = image;
                 handles.imageMode = imageMode;
             end
@@ -21,6 +27,36 @@ classdef LabelMethod
             end
             % show image
             hImage = imshow(image,[],'Parent',handles.imageAxes);
+            % show outline
+            LabelMethod.showAllCilia(handles);
+            handles = NucleiMethod.showNucleiBound(handles);
+            % show cilia image
+            if ~isempty(handles.imModePopmenu.String)
+                if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
+                    'DAPI') || isempty(handles.ciliaIdx)
+                    LabelMethod.showCiliaImage(handles, -1);
+                else
+                    LabelMethod.showCiliaImage(handles, 1);
+                end
+            else
+                LabelMethod.showCiliaImage(handles, -1);
+            end
+            % set button status
+            if handles.haveCilia
+                controlStatus.setLabelControlBtn(handles, true);
+                controlStatus.setNucleiBtn(handles, false);
+                if isequal(handles.imageMode, 'merged') && ...
+                        showMode == 4
+                    controlStatus.setLabelControlBtn(handles, false);
+                    controlStatus.setNucleiBtn(handles, true);
+                end
+            elseif isequal(handles.imageMode, 'b')
+                controlStatus.setLabelControlBtn(handles, false);
+                controlStatus.setNucleiBtn(handles, true);
+            elseif isequal(handles.imageMode, 'undef')
+                controlStatus.setLabelControlBtn(handles, false);
+                controlStatus.setNucleiBtn(handles, false);
+            end
             % bind with event
             if isequal(handles.imageMode, 'r') || ...
                     isequal(handles.imageMode, 'g') || ...
@@ -263,6 +299,12 @@ classdef LabelMethod
             value1 = handles.showRectCheckbox.Value;
             value2 = handles.showOutlineCheckbox.Value;
             value3 = handles.showLenCheckbox.Value;
+            if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
+                    'DAPI')
+                value1 = 0;
+                value2 = 0;
+                value3 = 0;
+            end
             % if show rectangle
             if value1
                 handles.showRectHandle{roiId}.EdgeColor = color;

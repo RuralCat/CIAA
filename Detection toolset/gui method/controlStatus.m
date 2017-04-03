@@ -37,31 +37,30 @@ classdef controlStatus
                 handles.ts.trainingSetSize,handles.progressbar);
         end
         
-        function setBtn(handles,btnEnable)
+        function setImageBtn(handles,btnEnable)
             set(handles.importImageBtn,'enable',btnEnable{1});
             set(handles.startLabelBtn,'enable',btnEnable{2});
             set(handles.nextImageBtn,'enable',btnEnable{3});
-            set(handles.previousImageBtn,'enable',btnEnable{4});
-            if length(btnEnable) > 4
-                set(handles.changeLabelModeBtn,'enable',btnEnable{5});
+            set(handles.skipImageBtn,'enable',btnEnable{4});
+        end
+        
+        function setLabelControlBtn(handles, btnEnable)
+            if btnEnable && isequal(handles.startLabelBtn.String, 'End Analysis')
+                e = 'on';
             else
-                set(handles.changeLabelModeBtn,'enable','off');
+                e = 'off';
             end
-            if length(btnEnable) > 5
-                set(handles.skipImageBtn,'enable',btnEnable{6});
-            else
-                set(handles.skipImageBtn,'enable','off');
-            end
-            if length(btnEnable) > 6
-                handles.addCiliaBtn.Enable = btnEnable{7};
-            else
-                handles.addCiliaBtn.Enable = 'off';
-            end
-            if length(btnEnable) > 7
-                handles.cnnPredictBtn.Enable = btnEnable{8};
-            else
-                handles.cnnPredictBtn.Enable = 'off';
-            end
+            handles.addCiliaBtn.Enable = e;
+            handles.changeLabelModeBtn.Enable = e;
+            handles.cnnPredictBtn.Enable = e;
+            handles.snrThresTxt.Enable = e;
+            handles.snrSlider.Enable = e;
+            handles.directionThresTxt.Enable = e;
+            handles.directionSlider.Enable = e;
+            handles.showRectCheckbox.Enable = e;
+            handles.showOutlineCheckbox.Enable = e;
+            handles.showLenCheckbox.Enable = e;
+            
         end
         
         function setCiliaBtn(handles,btnEnable)
@@ -72,6 +71,17 @@ classdef controlStatus
             handles.nextCiliaBtn.Enable = btnEnable{2};
             handles.correctBtn.Enable = btnEnable{3};
             handles.okBtn.Enable = btnEnable{4};
+        end
+        
+        function setNucleiBtn(handles, btnEnable)
+            if btnEnable
+                e = 'on';
+            else
+                e = 'off';
+            end
+            handles.minNucleiAreaTxt.Enable = e;
+            handles.edgeFactorTxt.Enable = e;
+            handles.showNucleiCheckbox.Enable = e;
         end
             
     end

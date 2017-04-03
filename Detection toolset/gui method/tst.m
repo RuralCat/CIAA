@@ -59,7 +59,7 @@ try
     handles = HandlesMethod.initializeHandles(handles);
     handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
     % show a black image
-    handles = LabelMethod.showImage(handles,zeros(500));
+    handles = LabelMethod.showImage(handles,zeros(1000));
     LabelMethod.showCiliaImage(handles,-1);
 %     LabelMethod.showCiliaFeatrue(handles,-1);
     waitbarImage = ones(30,250);
@@ -84,7 +84,7 @@ try
     handles.progressbar = embedWaitbar(0,'',handles.uipanel1,...
         handles.progressbarAxes.Position);
     % set control status
-    controlStatus.setBtn(handles,{'on','off','off','off'});
+    controlStatus.setImageBtn(handles,{'on','off','off','off'});
     set(handles.startLabelBtn,'string','Start Analysis');
     controlStatus.setTxt(handles);
     controlStatus.setOperationMenu(handles,true);
@@ -175,8 +175,9 @@ try
     handles = HandlesMethod.initializeHandles(handles);
     handles = TrainingSet.newTrainingSet(handles);
     handles = LabelMethod.showImage(handles,zeros(500));
+    handles = LabelMethod.showCiliaImage(handles);
     controlStatus.setTxt(handles);
-    controlStatus.setBtn(handles,{'on','off','off','off'});
+    controlStatus.setImageBtn(handles,{'on','off','off','off'});
     handles = HandlesMethod.setFigureName(handles,'Untitled Training Set');
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -326,28 +327,25 @@ try
     end
     startBtnStatus = get(handles.startLabelBtn,'string');
     if strcmp(startBtnStatus,'Start Analysis')
+        % change button string
+        set(handles.startLabelBtn,'string','End Analysis');
         % move image's cursor
         handles.imageCursor = handles.imageCursor + 1;
         handles = ImageMethod.processCurrentImage(handles);
+        handles = LabelMethod.showImage(handles, handles.image);
         % change btn status
         if handles.totalImage > 1
-            nextImageBtnEnable = 'on';
+            hasNextImage = 'on';
         else
-            nextImageBtnEnable = 'off';
+            hasNextImage = 'off';
         end
-        if handles.haveCilia
-            controlStatus.setBtn(handles,{'off','on',...
-                nextImageBtnEnable, 'off','on','on','on','on'});
-        else
-            controlStatus.setBtn(handles,{'off','on',...
-                nextImageBtnEnable, 'off'});
-        end
+        controlStatus.setImageBtn(handles,{'off','on',...
+                hasNextImage, 'on'});
         controlStatus.setTxt(handles);
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{handles.imageCursor};
-        % change button string
-        set(handles.startLabelBtn,'string','End Analysis');
     else
+        set(handles.startLabelBtn,'string','Start Analysis');
         % save current ts
         if handles.haveCilia
             handles.ts = handles.ts.MergeTrainingSet(TrainingSet(handles));
@@ -363,10 +361,9 @@ try
         % save
         handles = savetsMenu_Callback(hObject, eventdata, handles);
         % change btn status
-        controlStatus.setBtn(handles,{'on','on','off','off'});
+        controlStatus.setImageBtn(handles,{'on','on','off','off'});
         controlStatus.setTxt(handles);
         controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
-        set(handles.startLabelBtn,'string','Start Analysis');
     end
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -389,6 +386,7 @@ try
     end
     % move ts cursor
     handles.tsCursor = handles.tsCursor + handles.roiNum;
+    handles = HandlesMethod.initializeImage(handles);
     % show next image
     handles.imageCursor = handles.imageCursor + 1;
     handles = LabelMethod.showImage(handles,handles.imageStack{handles.imageCursor});
@@ -402,11 +400,7 @@ try
     else
         hasNextImage = 'on';
     end
-    if handles.haveCilia
-        controlStatus.setBtn(handles,{'off','on',hasNextImage,'on','on','on','on','on'});
-    else
-        controlStatus.setBtn(handles,{'off','on',hasNextImage,'on'});
-    end
+    controlStatus.setImageBtn(handles,{'off','on',hasNextImage,'on'});
     controlStatus.setTxt(handles);
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -440,7 +434,7 @@ try
         handles = LabelMethod.showCilia(handles,i);
     end
     % change btn status
-    controlStatus.setBtn(handles,{'off','on','on','off','on','on'});
+    controlStatus.setImageBtn(handles,{'off','on','on','off','on','on'});
     controlStatus.setTxt(handles);
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -463,7 +457,7 @@ try
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
         controlStatus.setTxt(handles);
-        controlStatus.setBtn(handles,{'on','on','off','off'});
+        controlStatus.setImageBtn(handles,{'on','on','off','off'});
     end
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -714,7 +708,7 @@ try
     if strcmp(handles.addCiliaBtn.String,'Add Cilia')
         % set btn status
         hasNext = handles.nextImageBtn.Enable;
-        controlStatus.setBtn(handles,{'off','off','off','off'});
+        controlStatus.setImageBtn(handles,{'off','off','off','off'});
         [pointX,pointY] = getpts(handles.imageAxes);
         pointX = min(max(pointX,1),handles.imageH);
         pointY = min(max(pointY,1),handles.imageW);
@@ -740,7 +734,7 @@ try
             handles = LabelMethod.showCiliaImage(handles);
         end
         % set btn status
-        controlStatus.setBtn(handles,{'off','on',hasNext,'off','on',hasNext,'on','on'});
+        controlStatus.setImageBtn(handles,{'off','on',hasNext,'off','on',hasNext,'on','on'});
     else
     end
 catch ME

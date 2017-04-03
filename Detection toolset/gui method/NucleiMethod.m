@@ -25,10 +25,11 @@ classdef NucleiMethod
         
         function handles = showNucleiBound(handles)
             % if show
-            if isequal(handles.imageMode, 'b')
-                value = handles.showNucleiCheckbox.Value;
-            elseif isequal(handles.imageMode, 'merged') && ...
-                    handles.imModePopmenu.Value == 4
+            if handles.nucleiNum == 0
+                return;
+            end
+            if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
+                    'DAPI')
                 value = handles.showNucleiCheckbox.Value;
             else
                 value = 0;
