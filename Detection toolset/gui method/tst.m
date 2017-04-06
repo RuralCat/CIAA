@@ -845,12 +845,12 @@ try
     imType = handles.imModePopmenu.String{handles.imModePopmenu.Value};
     if isequal(imType, 'merged') || isequal(imType, 'FITC')
         handles.skeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
-        handles.manualCiliaLength{idx} = len;
+        handles.manualCiliaLength(idx) = len;
     elseif isequal(imType, 'Cy3')
         handles.outerSkeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
-        handles.manualOuterCiliaLength{idx} = len;
+        handles.manualOuterCiliaLength(idx) = len;
     end
-    handles.manualOuterCiliaLength(idx) = handles.manualOuterCiliaLength(idx) ...
+    handles.manualAnalysisTime(idx) = handles.manualAnalysisTime(idx) ...
         + handles.ciliaSkeCorrectTime;
     % set btn status
     delete(handles.freehand);

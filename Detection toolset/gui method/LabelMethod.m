@@ -18,6 +18,15 @@ classdef LabelMethod
                 handles.imageMode = imageMode;
                 % update control status
                 handles = HandlesMethod.updateImModePopmenu(handles, imageMode);
+            end
+            % if imModePopmenu changed
+            if isequal(handles.imageMode, 'merged')
+               if showMode > 1
+                   image = image(:, :, showMode - 1);
+               end
+            end
+            % show image
+            if ~isequal(image, handles.curShowImage)
                 % show image
                 hImage = imshow(image,[],'Parent',handles.imageAxes);
                 % bind with event
@@ -28,16 +37,8 @@ classdef LabelMethod
                     set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
                         'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
                 end
-            end
-            % if imModePopmenu changed
-            if isequal(handles.imageMode, 'merged')
-               if showMode > 1
-                   image = image(:, :, showMode - 1);
-               end
-            end
-            % show image
-            if ~isequal(image, handles.image)
-                imshow(image,[],'Parent',handles.imageAxes);
+                % update current show image
+                handles.curShowImage = image;
             end
             % show outline
             LabelMethod.showAllCilia(handles);

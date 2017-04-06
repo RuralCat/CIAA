@@ -36,9 +36,9 @@ classdef ReportMethod
             report.manualOuterCiliaLength{idx} = handles.manualOuterCiliaLength(trueCiliaIdx);
             report.manualAnalysisTime{idx} = handles.manualAnalysisTime(trueCiliaIdx);
             % compute ratio
-            report.inOutRatio{idx} = report.outerCiliaLength{idx} ./ ...
+            report.inOutRatio{idx} = 100 * report.outerCiliaLength{idx} ./ ...
                 (report.ciliaLength{idx} + 1e-4);
-            report.manualInOutRatio{idx} = report.manualOuterCiliaLength{idx} ./ ...
+            report.manualInOutRatio{idx} = 100 * report.manualOuterCiliaLength{idx} ./ ...
                 (report.manualCiliaLength{idx} + 1e-4);
             handles.report = report;
         end
@@ -92,7 +92,11 @@ classdef ReportMethod
                 for t = 1 : report.ciliaNum(k)
                     ciliaProp = blankRow;
                     ciliaProp{1} = t;
-                    ciliaProp{2} = report.ciliaPosition{k}(t, [1,2,5,6]);
+                    ciliaPosi = report.ciliaPosition{k}(t, [1,2,5,6]);
+                    ciliaPosi = ['[', num2str(ciliaPosi(1)), ',', ...
+                        num2str(ciliaPosi(2)), ',', num2str(ciliaPosi(3)), ',',...
+                        num2str(ciliaPosi(4)), ']'];
+                    ciliaProp{2} = ciliaPosi;
                     ciliaProp{3} = report.ciliaLength{k}(t);
                     ciliaProp{4} = report.outerCiliaLength{k}(t);
                     ciliaProp{5} = report.inOutRatio{k}(t);
@@ -106,10 +110,10 @@ classdef ReportMethod
                 reportFile = cat(1, reportFile, blankRow);
             end
             % write to excel or csv
-            try
-                    Excel = matlab.io.internal.getExcelInstance;
-                    Excel.delete;
-            end
+%             try
+%                     Excel = matlab.io.internal.getExcelInstance;
+%                     Excel.delete;
+%             end
             try
                 fullPath = fullfile(filePath, [reportName, '.xlsx']);
                 sheet = 1;
@@ -117,11 +121,37 @@ classdef ReportMethod
                 xlswrite(fullPath, reportFile, sheet, xlRange);
             catch
                 fullPath = fullfile(filePath, [reportName, '.dat']);
-                csvwrite(fullPath, reportFile);
+                % open a file
+                fid = fopen(fullPath, 'w');
+                % write image name
+                fprintf(fid, '%s\n\n', reportName);
+                % define formatSpec
+                imageHeadFormatSpec = '%s\t %s\t %s\t %s\n';
+                imagePropFormatSpec = '%d\t %s\t %s\t %d\n';
+                ciliaHeadFormatSpec = '%s\t %s\t %s\t %s\t %s\t %s\t %s\t %s\t %s\t %s\n';
+                ciliaPropFormatSpec = '%d\t %s\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\t %.2f\n';
+                % loop over image to write image
+                count = 3;
+                for k = 1 : report.imageNum
+                    if isempty(report.imageMode{k})
+                        break;
+                    end
+                    fprintf(fid, imageHeadFormatSpec, reportFile{count, 1:4});
+                    count = count + 1;
+                    fprintf(fid, imagePropFormatSpec, reportFile{count, 1:4});
+                    count = count + 1;
+                    fprintf(fid, ciliaHeadFormatSpec, reportFile{count, :});
+                    count = count + 1;
+                    for t = 1 : report.ciliaNum(k)
+                        fprintf(fid, ciliaPropFormatSpec, reportFile{count, :});
+                        count = count + 1;
+                    end
+                    fprintf(fid, '\n');
+                end
+                fclose(fid);
             end
                     
         end
-        
         
     end
 end

@@ -23,6 +23,7 @@ classdef HandlesMethod
             NucleiMethod.deleteNucleiHandle(handles);
             % initial paras
             handles.data = [];
+            handles.curShowImage = [];
             handles.image = {};
             handles.label = [];
             handles.parentImage = [];
