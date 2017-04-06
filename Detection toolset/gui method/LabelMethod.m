@@ -17,7 +17,17 @@ classdef LabelMethod
                 handles.image = image;
                 handles.imageMode = imageMode;
                 % update control status
-            handles = HandlesMethod.updateImModePopmenu(handles, imageMode);
+                handles = HandlesMethod.updateImModePopmenu(handles, imageMode);
+                % show image
+                hImage = imshow(image,[],'Parent',handles.imageAxes);
+                % bind with event
+                if isequal(handles.imageMode, 'r') || ...
+                        isequal(handles.imageMode, 'g') || ...
+                        (isequal(handles.imageMode, 'merged') && ...
+                        (showMode == 1 || showMode == 2 || showMode == 3))
+                    set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
+                        'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
+                end
             end
             % if imModePopmenu changed
             if isequal(handles.imageMode, 'merged')
@@ -26,7 +36,9 @@ classdef LabelMethod
                end
             end
             % show image
-            hImage = imshow(image,[],'Parent',handles.imageAxes);
+            if ~isequal(image, handles.image)
+                imshow(image,[],'Parent',handles.imageAxes);
+            end
             % show outline
             LabelMethod.showAllCilia(handles);
             handles = NucleiMethod.showNucleiBound(handles);
@@ -56,14 +68,6 @@ classdef LabelMethod
             elseif isequal(handles.imageMode, 'undef')
                 controlStatus.setLabelControlBtn(handles, false);
                 controlStatus.setNucleiBtn(handles, false);
-            end
-            % bind with event
-            if isequal(handles.imageMode, 'r') || ...
-                    isequal(handles.imageMode, 'g') || ...
-                    (isequal(handles.imageMode, 'merged') && ...
-                    (showMode == 1 || showMode == 2 || showMode == 3))
-                set(hImage,'ButtonDownFcn',{@(hObject,eventdata)tst(...
-                    'imageAxes_ButtonDownFcn',hObject,eventdata,guidata(hObject))});
             end
         end
         

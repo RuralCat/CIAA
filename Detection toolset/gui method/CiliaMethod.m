@@ -24,14 +24,17 @@ classdef CiliaMethod
                 ske(:,2) = ske(:,2) + colStart;
             end
             handles.skeleton{k} = ske;
-            handles.ciliaLength{k} = skeLen;
+            handles.ciliaLength(k) = skeLen;
+            handles.manualCiliaLength(k) = skeLen;
+            handles.outerCiliaLength(k) = 0;
+            handles.manualOuterCiliaLength(k) = 0;
         end
         
         function handles = computeOuterCiliaLength(handles, image, bbox, k)
             % get bounding box
             padlen = 5;
-            rowStart = max(bbox(handles.ciliaIdx(k),1)-padlen,1); 
-            colStart = max(bbox(handles.ciliaIdx(k),2)-padlen,1);
+            rowStart = max(bbox(handles.ciliaIdx(k),1) - padlen,1); 
+            colStart = max(bbox(handles.ciliaIdx(k),2) - padlen,1);
             rowEnd = min(bbox(handles.ciliaIdx(k),3) + padlen,handles.imageW);
             colEnd = min(bbox(handles.ciliaIdx(k),4) + padlen,handles.imageH);
             % find cilia skeleton and compute cilia length
@@ -42,7 +45,8 @@ classdef CiliaMethod
                 ske(:,2) = ske(:,2) + colStart;
             end
             handles.outerSkeleton{k} = ske;
-            handles.outerCiliaLength{k} = skeLen;
+            handles.outerCiliaLength(k) = skeLen;
+            handles.manualOuterCiliaLength(k) = skeLen;
         end
         
         function deleteShowHandle(handles)
@@ -72,12 +76,11 @@ classdef CiliaMethod
                 'b','LineWidth',0.01,'parent',handles.imageAxes,...
                 'Visible','off','Tag',num2str(k),...
                 'ButtonDownFcn',{@CiliaMethod.handleDownFcn});
-
             % length handle
             handles.showLengthHandle{k} = text(...
                 bbox(handles.ciliaIdx(k),2),...
                 bbox(handles.ciliaIdx(k),1),...
-                num2str(handles.ciliaLength{k}),...
+                num2str(handles.ciliaLength(k)),...
                 'Color','r','Visible','off','parent',handles.imageAxes,...
                 'Tag',num2str(k),'ButtonDownFcn',{@CiliaMethod.handleDownFcn});
             hold(handles.imageAxes,'off');

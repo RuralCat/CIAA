@@ -329,6 +329,8 @@ try
     if strcmp(startBtnStatus,'Start Analysis')
         % change button string
         set(handles.startLabelBtn,'string','End Analysis');
+        % create a report
+        handles.report = ReportMethod.createNewReport(handles);
         % move image's cursor
         handles.imageCursor = handles.imageCursor + 1;
         handles = ImageMethod.processCurrentImage(handles);
@@ -350,13 +352,15 @@ try
         if handles.haveCilia
             handles.ts = handles.ts.MergeTrainingSet(TrainingSet(handles));
         end
+        % add current image infomation to report
+        handles = ReportMethod.addToCurrentReport(handles);
         % move ts cursor
         handles.tsCursor = handles.tsCursor + handles.roiNum;
         % show first image in image stack
         handles.imageCursor = 0;
+        handles = HandlesMethod.initializeImage(handles);
         handles = LabelMethod.showImage(handles, handles.imageStack{1});
         LabelMethod.showCiliaImage(handles,-1);
-        handles = HandlesMethod.initializeImage(handles);
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};
         % save
@@ -385,11 +389,14 @@ try
     if handles.haveCilia
         handles.ts = handles.ts.MergeTrainingSet(TrainingSet(handles));
     end
+    % add current image infomation to report
+    handles = ReportMethod.addToCurrentReport(handles);
     % move ts cursor
     handles.tsCursor = handles.tsCursor + handles.roiNum;
     handles = HandlesMethod.initializeImage(handles);
-    % show next image
+    % move image cursor
     handles.imageCursor = handles.imageCursor + 1;
+    % show next image
     handles = LabelMethod.showImage(handles,handles.imageStack{handles.imageCursor});
     % process image
     handles = ImageMethod.processCurrentImage(handles);
@@ -454,6 +461,8 @@ function importImageBtn_Callback(hObject, eventdata, handles)
 try
     handles = LabelMethod.importImage(handles);
     if handles.totalImage > 0
+        % init
+        handles = HandlesMethod.initializeImage(handles);
         handles = LabelMethod.showImage(handles,handles.imageStack{1});
         % set image path text
         handles.imagePathTxt.String = handles.imageStack{1};

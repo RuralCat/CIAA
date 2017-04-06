@@ -11,6 +11,7 @@ classdef ImageMethod
         if ~isempty(colorMap)
             [~, y] = find(colorMap == max(colorMap(:)), 1);
             im = ind2rgb(im, colorMap);
+            im = im2uint8(im);
         elseif size(im, 3) == 3
             % if colormap is empty, using the mean of each dimension
             rgbMean(1) = mean(mean(im(:,:,1)));

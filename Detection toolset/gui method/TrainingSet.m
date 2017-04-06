@@ -30,7 +30,7 @@ classdef TrainingSet
             ts.ciliaSet = cell(ts.tsNum,4);
             for k = 1 : ts.tsNum
                 ts.ciliaSet{k,1} = k;
-                ts.ciliaSet{k,2} = handles.ciliaLength{k};
+                ts.ciliaSet{k,2} = handles.ciliaLength(k);
                 ts.ciliaSet{k,3} = handles.roiPosition(handles.ciliaIdx(k),1:4);
                 ts.ciliaSet{k,4} = handles.imageStack{handles.imageCursor};
             end
@@ -94,12 +94,13 @@ classdef TrainingSet
             save(fullpath,'ts','tsCheckCode','checkpoint');
             successSaved = true;
             % save cilia information
-            if isfield(handles.ts,'ciliaSet') || ...
-                    isprop(handles.ts,'ciliaSet') && ...
-                    length(handles.ts.ciliaSet) == length(handles.ts.label)
-                fullpath = [fullpath(1:end-3),'txt'];
-                TrainingSet.saveTrueCiliaInformation(handles,fullpath);
-            end
+%             if isfield(handles.ts,'ciliaSet') || ...
+%                     isprop(handles.ts,'ciliaSet') && ...
+%                     length(handles.ts.ciliaSet) == length(handles.ts.label)
+%                 fullpath = [fullpath(1:end-3),'txt'];
+%                 TrainingSet.saveTrueCiliaInformation(handles,fullpath);
+%             end
+            ReportMethod.writeReportToExcel(handles, pathname);
         end
         
         function saveTrueCiliaInformation(handles,savePath)
