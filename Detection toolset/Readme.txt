@@ -12,4 +12,11 @@ Update log:
 (2) add a window in TrainingSetView tool to view cilia position in full image
 (3) add a 'Cnn Predict' button to view a beta cnn's prediction
 (4) reorganize code file
-(5) add 'cnn training tool' to train a better net from better training set 
+(5) add 'cnn training tool' to train a better net from better training set
+
+3. v0.4 -> v0.5
+(1) add method to process different types of image
+(2) add method to count nuclei
+(3) modifed the method for calculating cilia length
+(4) add a timer to get manual analysis's time
+(5) export cilia analysis report (excel or text)
