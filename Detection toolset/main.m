@@ -9,4 +9,5 @@ addpath(fullfile(pwd,'figure files'));
 addpath(fullfile(pwd,'gui method'));
 
 % run detection toolset
+warning('off');
 run tst.m
