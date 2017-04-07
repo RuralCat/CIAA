@@ -53,7 +53,8 @@ classdef ImageMethod
                 case 'r'
                     tempImage = handles.image;
                     if size(handles.image, 3) == 3
-                        handles.image = tempImage(:,:,3);
+%                         handles.image = tempImage(:,:,1);
+                        handles.image = handles.image(:,:,[2,1,3]);
                     end
                     handles = LabelMethod.detectCilia(handles);
                     handles.image = tempImage;

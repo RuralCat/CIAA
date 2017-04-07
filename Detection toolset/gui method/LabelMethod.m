@@ -26,9 +26,13 @@ classdef LabelMethod
                end
             end
             % show image
-            if ~isequal(image, handles.curShowImage)
+            if ~any(image)
+                imshow(image, 'Parent', handles.imageAxes);
+            elseif ~isequal(image, handles.curShowImage)
                 % show image
+                hold(handles.imageAxes, 'on');
                 hImage = imshow(image,[],'Parent',handles.imageAxes);
+                hold(handles.imageAxes, 'off');
                 % bind with event
                 if isequal(handles.imageMode, 'r') || ...
                         isequal(handles.imageMode, 'g') || ...
@@ -96,11 +100,11 @@ classdef LabelMethod
                 % show skeleton
                 showFlag = 1;
                 if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
-                        'Cy3') && ~isempty(handles.outerSkeleton{idx})
+                        'Cy3') && ~isempty(handles.outerSkeleton)
                     skeletonX = handles.outerSkeleton{idx}(:,1) - xstart;
                     skeletonY = handles.outerSkeleton{idx}(:,2) - ystart;
                 elseif ~isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
-                        'Cy3') && ~isempty(handles.skeleton{idx})
+                        'Cy3') && ~isempty(handles.skeleton)
                     skeletonX = handles.skeleton{idx}(:,1) - xstart;
                     skeletonY = handles.skeleton{idx}(:,2) - ystart;
                 else
@@ -267,7 +271,11 @@ classdef LabelMethod
             % get histim
             histIm = im2double(handles.image);
             if size(handles.image, 3) == 3
-                histIm = imagePreProcessing(histIm(:,:,2));
+                if isequal(handles.imageMode, 'r')
+                    histIm = imagePreProcessing(histIm(:,:,1));
+                else
+                    histIm = imagePreProcessing(histIm(:,:,2));
+                end
             else
                 histIm = imagePreProcessing(histIm);
             end
