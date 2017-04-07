@@ -130,9 +130,6 @@ classdef ReportMethod
                 workbook.Close(false);
                 excel.Quit;
                 excel.delete;
-%                 sheet = 1;
-%                 xlRange = 'A1';
-%                 xlswrite(fullPath, reportFile, sheet, xlRange);
             catch
                 % get full path
                 fullPath = fullfile(filePath, [reportName, '.dat']);
