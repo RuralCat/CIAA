@@ -47,9 +47,6 @@ classdef ReportMethod
             % get report
             report = handles.report;
             blankRow = cell(1, 10);
-            for k = 1 : 10
-                blankRow{k} = '-';
-            end
             % create report name
             time = clock;
             time = [num2str(time(1)), '_', num2str(time(2)), '_', ...
@@ -110,16 +107,34 @@ classdef ReportMethod
                 reportFile = cat(1, reportFile, blankRow);
             end
             % write to excel or csv
-%             try
-%                     Excel = matlab.io.internal.getExcelInstance;
-%                     Excel.delete;
-%             end
             try
+                % get full path
                 fullPath = fullfile(filePath, [reportName, '.xlsx']);
-                sheet = 1;
-                xlRange = 'A1';
-                xlswrite(fullPath, reportFile, sheet, xlRange);
+                % create a excel server
+                excel = actxserver('Excel.application');
+                % add a work book
+                workbook = excel.Workbooks.Add;
+                % get excel sheet
+                sheets = workbook.Sheets.Item(1);
+                sheets.Activate;
+                % set write range
+                N = num2str(size(reportFile, 1));
+                Select(Range(excel, ['A1:J', N]));
+                % export data to selected region
+                excel.selection.Value = reportFile;
+                % merge cells
+                sheets.Range('A1:J1').MergeCells = 1;
+                % save ('xlsx format code: 51')
+                workbook.SaveAs(fullPath, 51);
+                % close file
+                workbook.Close(false);
+                excel.Quit;
+                excel.delete;
+%                 sheet = 1;
+%                 xlRange = 'A1';
+%                 xlswrite(fullPath, reportFile, sheet, xlRange);
             catch
+                % get full path
                 fullPath = fullfile(filePath, [reportName, '.dat']);
                 % open a file
                 fid = fopen(fullPath, 'w');
