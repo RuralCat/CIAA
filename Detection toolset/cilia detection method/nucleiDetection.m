@@ -27,10 +27,12 @@ end
 
 %% pre-processing
 % remove white bar
-whileBarSurroundBg = (rawIm(963,:) + rawIm(974, :)) / 2;
-rawIm(964:973, 8:621) = repmat(whileBarSurroundBg(8:621), [10,1]);
-scaleBarSurroundBg = (rawIm(982,:) + rawIm(993, :)) / 2;
-rawIm(982:993, 291:339) = repmat(scaleBarSurroundBg(291:339), [12,1]); 
+if size(rawIm, 1) == 1000 && size(rawIm, 2) == 1000
+    whileBarSurroundBg = (rawIm(963,:) + rawIm(974, :)) / 2;
+    rawIm(964:973, 8:621) = repmat(whileBarSurroundBg(8:621), [10,1]);
+    scaleBarSurroundBg = (rawIm(982,:) + rawIm(993, :)) / 2;
+    rawIm(982:993, 291:339) = repmat(scaleBarSurroundBg(291:339), [12,1]); 
+end
 
 % filtering
 diskFilterH = getnhood(strel('disk', 6));
@@ -49,7 +51,11 @@ histNum = imhist(rawIm);
 [~,ind] = sort(histNum,'descend');
 ind = ind(1:2);
 bg = sum((ind-1)/255.*histNum(ind)) / sum(histNum(ind));
-histIm = imadjust(rawIm, [0.8*bg, max(rawIm(:))], [0.001,1]);
+lowIn = 0.8 * bg;
+highIn = max(rawIm(:));
+if lowIn < highIn
+    histIm = imadjust(rawIm, [0.8*bg, max(rawIm(:))], [0.001,1]);
+end
 histIm = imsharpen(histIm);
 histIm = imfilter(histIm, fspecial('gaussian',[3,3],2));
 
