@@ -11,19 +11,26 @@ classdef NucleiMethod
             nucleiCC = bwconncomp(nucleiBw, 4);
             handles.nucleiNum = nucleiCC.NumObjects;
             % create show handle
-            nucleiBound = bwboundaries(nucleiBw, 4);
-            hold(handles.imageAxes, 'on');
-            for k = 1 : handles.nucleiNum
-                handles.showNucleiHandle{k} = plot(...
-                    nucleiBound{k}(:,2), nucleiBound{k}(:,1), ...
-                    'r', 'LineWidth', 0.01, 'parent', handles.imageAxes, ...
-                    'Visible', 'off');
-            end
+            handles.nucleiBound = bwboundaries(nucleiBw, 4);
+            handles = NucleiMethod.createNucleiBoundHandle(handles);
             % show nuclei
             NucleiMethod.showNucleiBound(handles);
         end
         
+        function handles = createNucleiBoundHandle(handles)
+            hold(handles.imageAxes, 'on');
+            for k = 1 : handles.nucleiNum
+                handles.showNucleiHandle{k} = plot(...
+                    handles.nucleiBound{k}(:,2), handles.nucleiBound{k}(:,1), ...
+                    'r', 'LineWidth', 0.01, 'parent', handles.imageAxes, ...
+                    'Visible', 'off');
+            end
+            hold(handles.imageAxes, 'off');
+        end
+        
         function handles = showNucleiBound(handles)
+            % if handle has been deleted
+            handles = NucleiMethod.createNucleiBoundHandle(handles);
             % if show
             if handles.nucleiNum == 0
                 return;

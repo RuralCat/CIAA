@@ -736,7 +736,31 @@ try
             [handles,data] = CiliaMethod.getCiliaRegion(handles,handles.roiPosition,k);
 %             data = reshape(data,[size(data,1),1,3]);
             handles.data = cat(2,handles.data,data);
-            handles = CiliaMethod.computeCiliaLength(handles,handles.roiPosition,k);
+            % compute cilia length
+            im = im2double(handles.image);
+            handles.autoAnalysisTime = cat(2, handles.autoAnalysisTime, 0);
+            handles.manualAnalysisTime = cat(2, handles.manualAnalysisTime, 0);
+            if size(im, 3) == 3
+                if isequal(handles.imageMode, 'r')
+                    histIm = imagePreProcessing(im(:,:,1));
+                else
+                    histIm = imagePreProcessing(im(:,:,2));
+                end
+            else
+                histIm = imagePreProcessing(im);
+            end
+            tic;
+            handles = CiliaMethod.computeCiliaLength(handles, histIm, ...
+                handles.roiPosition, k);
+            handles.autoAnalysisTime(k) = handles.autoAnalysisTime(k) + toc;
+            if isequal(handles.imageMode, 'merged')
+                histIm = imagePreProcessing(im(:,:,1));
+                tic;
+                handles = CiliaMethod.computeOuterCiliaLength(handles, ...
+                    histIm, handles.roiPosition, k);
+                handles.autoAnalysisTime(k) = handles.autoAnalysisTime(k) + toc;
+            end
+            % create show handle
             handles = CiliaMethod.createShowHandle(handles, handles.roiPosition, k);
             % show new cilia
             LabelMethod.showCilia(handles,k);

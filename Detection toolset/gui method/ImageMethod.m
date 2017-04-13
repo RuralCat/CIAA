@@ -18,8 +18,8 @@ classdef ImageMethod
             rgbMean(2) = mean(mean(im(:,:,2)));
             rgbMean(3) = mean(mean(im(:,:,3)));
             [sortedMean, ind] = sort(rgbMean, 'descend');
-            if sortedMean(1) / sortedMean(2) > 5 && ...
-                    sortedMean(1) / sortedMean(3) > 5
+            if sortedMean(1) / sortedMean(2) > 3 && ...
+                    sortedMean(1) / sortedMean(3) > 3
                 y = ind(1);
             else
                 y = 4;

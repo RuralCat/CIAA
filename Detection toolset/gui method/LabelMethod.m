@@ -30,9 +30,9 @@ classdef LabelMethod
                 imshow(image, 'Parent', handles.imageAxes);
             elseif ~isequal(image, handles.curShowImage)
                 % show image
-                hold(handles.imageAxes, 'on');
+%                 hold(handles.imageAxes, 'on');
                 hImage = imshow(image,[],'Parent',handles.imageAxes);
-                hold(handles.imageAxes, 'off');
+%                 hold(handles.imageAxes, 'off');
                 % bind with event
                 if isequal(handles.imageMode, 'r') || ...
                         isequal(handles.imageMode, 'g') || ...
@@ -323,6 +323,11 @@ classdef LabelMethod
                 value1 = 0;
                 value2 = 0;
                 value3 = 0;
+            end
+            % if handle has been deleted, recreate it
+            if ~ishandle(handles.showRectHandle{roiId})
+                handles = CiliaMethod.createShowHandle(handles, ...
+                    handles.roiPosition, roiId);
             end
             % if show rectangle
             if value1
