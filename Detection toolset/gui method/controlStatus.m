@@ -65,12 +65,14 @@ classdef controlStatus
         
         function setCiliaBtn(handles,btnEnable)
             if nargin == 1
-                btnEnable = {'on','on','on','on'};
+                btnEnable = {'on','on','on','on', 'on', 'on'};
             end
             handles.previousCiliaBtn.Enable = btnEnable{1};
             handles.nextCiliaBtn.Enable = btnEnable{2};
             handles.correctBtn.Enable = btnEnable{3};
             handles.okBtn.Enable = btnEnable{4};
+            handles.zoomInBtn.Enable = btnEnable{5};
+            handles.zoomOutBtn.Enable = btnEnable{6};
         end
         
         function setNucleiBtn(handles, btnEnable)

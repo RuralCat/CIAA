@@ -335,6 +335,8 @@ try
         handles.imageCursor = handles.imageCursor + 1;
         handles = ImageMethod.processCurrentImage(handles);
         handles = LabelMethod.showImage(handles, handles.image);
+        handles.ciliaShowIdx = 1;
+        handles = LabelMethod.showCiliaImage(handles);
         % change btn status
         if handles.totalImage > 1
             hasNextImage = 'on';
@@ -368,7 +370,6 @@ try
         % change btn status
         controlStatus.setImageBtn(handles,{'on','on','off','off'});
         controlStatus.setTxt(handles);
-        controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
     end
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
@@ -856,22 +857,23 @@ try
     end
     handles.showLengthHandle{idx}.String = num2str(len);
     % show skeleton
-%     handles.skeletonHandle.Visible = 'off';
+%     LabelMethod.showCiliaImage(handles, idx);
     delete(handles.skeletonHandle);
     hold(handles.ciliaAxes,'on');
     handles.skeletonHandle = plot(handles.ciliaAxes,...
-        position(:,1),position(:,2),'r','LineWidth',0.01);
+        position(:,1), position(:,2), 'r', 'LineWidth', 0.01);
     hold(handles.ciliaAxes,'off');
     % update cilia information
     box = handles.roiPosition(handles.ciliaIdx(idx),:);
-    xStart = max(box(1) - ceil(0.3*box(5)),1);
-    yStart = max(box(2) - ceil(0.3*box(6)),1);
+    xStart = max(box(1) - ceil(handles.padFactor * box(5)), 1);
+    yStart = max(box(2) - ceil(handles.padFactor * box(6)), 1);
     imType = handles.imModePopmenu.String{handles.imModePopmenu.Value};
-    if isequal(imType, 'merged') || isequal(imType, 'FITC')
-        handles.skeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
+    if isequal(imType, 'Merged') || isequal(imType, 'FITC') || ...
+            (strcmp(imType, 'Cy3') && strcmp(handles.imageMode, 'Cy3'))
+        handles.skeleton{idx} = [position(:,2) + xStart, position(:,1) + yStart];
         handles.manualCiliaLength(idx) = len;
     elseif isequal(imType, 'Cy3')
-        handles.outerSkeleton{idx} = [position(:,2)+xStart,position(:,1)+yStart];
+        handles.outerSkeleton{idx} = [position(:,2) + xStart,position(:,1) + yStart];
         handles.manualOuterCiliaLength(idx) = len;
     end
     handles.manualAnalysisTime(idx) = handles.manualAnalysisTime(idx) ...
@@ -880,6 +882,36 @@ try
     delete(handles.freehand);
     handles.correctBtn.String = 'Correct';
     handles.okBtn.Enable = 'off';
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+% --- Execute on button press in zoomInBtn
+function zoomInBtn_Callback(hObject, eventdata, handles)
+%
+try
+    idx = handles.ciliaShowIdx;
+    handles.padFactor = max(handles.padFactor - 0.3, 0.0);
+    handles = LabelMethod.showCiliaImage(handles, idx);
+catch ME
+    msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
+        ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
+    msgShow(handles,msg,'error');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+% --- Execute on button press in zoomOutBtn
+function zoomOutBtn_Callback(hObject, eventdata, handles)
+%
+try
+    idx = handles.ciliaShowIdx;
+    handles.padFactor = handles.padFactor + 0.3;
+    handles = LabelMethod.showCiliaImage(handles, idx);
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
         ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];

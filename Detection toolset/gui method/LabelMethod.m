@@ -76,8 +76,8 @@ classdef LabelMethod
             end
         end
         
-        function handles = showCiliaImage(handles,idx)
-            if nargin == 1
+        function handles = showCiliaImage(handles, idx)
+            if nargin < 2
                 if isempty(handles.label)
                     idx = -1;
                 else
@@ -86,17 +86,17 @@ classdef LabelMethod
             end
             if idx == -1
                 imshow(zeros(500),'Parent',handles.ciliaAxes);
-                controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
+                controlStatus.setCiliaBtn(handles,{'off','off','off','off', 'off', 'off'});
             else
                 % show image
                 box = handles.roiPosition(handles.ciliaIdx(idx),:);
-                padl = ceil(0.3*box(5:6));
-                xstart = max(box(1) - padl(1),1);
+                padl = ceil(handles.padFactor * box(5:6));
+                xstart = max(box(1) - padl(1), 1);
                 xend = min(box(3) + padl(1),handles.imageH);
-                ystart = max(box(2) - padl(2),1);
+                ystart = max(box(2) - padl(2), 1);
                 yend = min(box(4) + padl(2),handles.imageW);
-                localIm = handles.image(xstart:xend,ystart:yend,:);
-                imshow(localIm,[],'Parent',handles.ciliaAxes);
+                localIm = handles.image(xstart:xend, ystart:yend, :);
+                imshow(localIm, [], 'Parent', handles.ciliaAxes);
                 % show skeleton
                 showFlag = 1;
                 if isequal(handles.imModePopmenu.String{handles.imModePopmenu.Value}, ...
@@ -111,22 +111,26 @@ classdef LabelMethod
                     showFlag = 0;
                 end
                 if showFlag
+                    if isfield(handles, 'skeletonHandle') && ...
+                            ishandle(handles.skeletonHandle)
+                        delete(handles.skeletonHandle);
+                    end
                     hold(handles.ciliaAxes,'on');
                     handles.skeletonHandle = plot(handles.ciliaAxes,...
-                        skeletonY,skeletonX,'r','LineWidth',0.01);
+                        skeletonY, skeletonX, 'r', 'LineWidth', 0.01);
                     hold(handles.ciliaAxes,'off');
                 end
                 % set btn status
                 if idx == 1
                     if handles.roiNum == 1
-                        controlStatus.setCiliaBtn(handles,{'off','off','on','off'});
+                        controlStatus.setCiliaBtn(handles,{'off','off','on','off','on','on'});
                     else
-                        controlStatus.setCiliaBtn(handles,{'off','on','on','off'});
+                        controlStatus.setCiliaBtn(handles,{'off','on','on','off','on','on'});
                     end
                 elseif idx == length(handles.ciliaIdx)
-                    controlStatus.setCiliaBtn(handles,{'on','off','on','off'});
+                    controlStatus.setCiliaBtn(handles,{'on','off','on','off','on','on'});
                 else
-                    controlStatus.setCiliaBtn(handles,{'on','on','on','off'});
+                    controlStatus.setCiliaBtn(handles,{'on','on','on','off','on','on'});
                 end
                 % show cilia featrue
 %                 LabelMethod.showCiliaFeatrue(handles,localIm);
@@ -300,8 +304,6 @@ classdef LabelMethod
             handles.parentImage = ones(1,handles.roiNum) * handles.imageCursor;
             % show cilia in axes
             LabelMethod.showAllCilia(handles);
-            handles.ciliaShowIdx = 1;
-            handles = LabelMethod.showCiliaImage(handles);
         end
         
         function handles = showCilia(handles,roiId)

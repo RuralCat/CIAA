@@ -40,6 +40,7 @@ classdef HandlesMethod
             handles.manualAnalysisTime = [];
             handles.imageMode = 'undef';
             handles.nucleiNum = 0;
+            handles.padFactor = 0.3;
         end
         
         function handles = setFigureName(handles,name)
