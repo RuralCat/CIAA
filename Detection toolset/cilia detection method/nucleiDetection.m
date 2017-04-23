@@ -168,8 +168,11 @@ concavePoints = bound(loc,:);
 cpDist = zeros(1, size(concavePoints, 1));
 for k = 1 : size(concavePoints, 1)
     cP = concavePoints(k,:);
-    region = ccObj(cP(1) - regRadius : cP(1) + regRadius,...
-        cP(2) - regRadius : cP(2) + regRadius);
+    rowStart = max(cP(1) - regRadius, 1);
+    rowEnd = min(cP(1) + regRadius, size(ccObj, 1));
+    colStart = max(cP(2) - regRadius, 1);
+    colEnd = min(cP(2) + regRadius, size(ccObj, 2));
+    region = ccObj(rowStart : rowEnd, colStart : colEnd);
     regHull = bwconvhull(region);
     hullBound = bwboundaries(regHull);
     hullBound = hullBound{1};

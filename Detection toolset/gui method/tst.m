@@ -88,7 +88,6 @@ try
     set(handles.startLabelBtn,'string','Start Analysis');
     controlStatus.setTxt(handles);
     controlStatus.setOperationMenu(handles,true);
-    controlStatus.setCiliaBtn(handles,{'off','off','off','off'});
 catch ME
     msg = [ME.message,char(13,10)','Error file:',ME.stack(1).file,char(13,10)','Error function:',...
         ME.stack(1).name,char(13,10)','Error line:',num2str(ME.stack(1).line)];
