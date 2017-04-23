@@ -9,3 +9,5 @@ Detection\ toolset/cnn/*.mat
 __pycache__/*
 # ignore matlab temp file
 *.asv
+# ignore excel file
+*.xlsx
